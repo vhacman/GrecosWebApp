@@ -1,18 +1,19 @@
 # Grecos Pizzeria — Menu Digitale
 
-Sito web menu digitale con QR code, pannello admin e ordini da asporto.
+Menu digitale con QR code e pannello admin per Grecos Pizzeria.
 
 **Cliente:** Grecos Pizzeria (@grecos11)
 **Sviluppatrice:** Hacman Viorica Gabriela
 **Stack:** Angular 21 + Bootstrap 5 + Bootstrap Icons + Firebase (Firestore + Auth + Hosting)
 **URL:** https://grecospizzeria-47768.web.app
+**Versione:** v1.0.0 — 04-03-2026
 
 ---
 
 ## Progetti Firebase
 
 - **Produzione:** `grecospizzeria-47768` (https://grecospizzeria-47768.web.app)
-- **Legacy:** `grecosmenu` (non più in uso)
+- **Legacy:** `grecosmenu` (non piu in uso)
 
 ---
 
@@ -23,21 +24,25 @@ GrecosMenu/
 ├── src/
 │   ├── app/
 │   │   ├── components/
-│   │   │   └── install-prompt.ts    # Componente per installazione PWA
+│   │   │   └── install-prompt.ts           # Prompt installazione PWA
 │   │   ├── core/
-│   │   │   ├── models/             # Interfacce TypeScript
-│   │   │   │   ├── menu-item.ts
-│   │   │   │   ├── fuori-menu.ts
-│   │   │   │   └── utente.ts
-│   │   │   └── guards/
-│   │   │       └── auth-guard.ts
+│   │   │   ├── models/
+│   │   │   │   ├── menu-item.ts            # MenuItem + CategoriaMenu
+│   │   │   │   ├── fuori-menu.ts           # FuoriMenu
+│   │   │   │   ├── ingrediente.ts          # Ingrediente
+│   │   │   │   ├── storico-serata.ts       # StoricaSerata
+│   │   │   │   └── utente.ts               # Utente
+│   │   │   ├── guards/
+│   │   │   │   └── auth-guard.ts           # CanActivateFn
+│   │   │   └── pipes/
+│   │   │       └── parse-ingredienti.pipe.ts
 │   │   ├── services/
-│   │   │   ├── menu.ts             # CRUD menu + fuori menu
-│   │   │   ├── auth.ts             # Autenticazione Firebase
-│   │   │   └── config.ts           # Configurazione e statistiche
+│   │   │   ├── menu.ts                     # CRUD menu + fuori menu + ingredienti
+│   │   │   ├── auth.ts                     # Autenticazione Firebase
+│   │   │   └── config.ts                   # Serata, orari, messaggio, statistiche, storici
 │   │   ├── public/
-│   │   │   ├── menu/               # Menu pubblico (lettura)
-│   │   │   │   ├── menu.ts + .html + .css
+│   │   │   ├── home/                       # Homepage pubblica
+│   │   │   ├── menu/                       # Menu pubblico
 │   │   │   │   ├── antipasti/
 │   │   │   │   ├── pizze-rosse/
 │   │   │   │   ├── pizze-bianche/
@@ -46,65 +51,91 @@ GrecosMenu/
 │   │   │   │   ├── bevande/
 │   │   │   │   ├── filtri/
 │   │   │   │   └── fuori-menu-sezione/
-│   │   │   ├── home/               # Homepage pubblica
 │   │   │   └── layout/
-│   │   │       ├── navbar-categorie/
-│   │   │       └── fuori-menu-hero/
+│   │   │       ├── navbar-categorie/       # Navbar sticky scroll orizzontale
+│   │   │       └── fuori-menu-hero/        # Hero fuori menu
 │   │   └── admin/
 │   │       ├── login/
 │   │       ├── dashboard/
 │   │       ├── gestione-menu/
 │   │       ├── gestione-fuori-menu/
+│   │       ├── disponibilita-ingredienti/
+│   │       ├── disponibilita-antipasti/
+│   │       ├── disponibilita-dolci/
+│   │       ├── disponibilita-bevande/
+│   │       ├── resoconto-disponibilita/
+│   │       ├── storico-serate/
+│   │       ├── statistiche/
 │   │       └── impostazioni/
 │   ├── environments/
-│   │   ├── environment.ts           # Produzione (grecospizzeria-47768)
+│   │   ├── environment.ts
 │   │   └── environment.development.ts
-│   ├── styles.css                  # Stili globali
+│   ├── styles.css
 │   └── index.html
 ├── scripts/
-│   ├── export-firestore.js         # Esporta dati dal DB
-│   ├── import-firestore.js         # Importa dati nel DB
-│   ├── service-account.json        # Credenziali vecchio progetto
-│   └── service-account-new.json   # Credenziali nuovo progetto
-├── seed.js                        # Popolamento database
-├── seed-pizze-fuori-menu.js       # Seed pizze fuori menu
-├── firestore.rules                 # Regole Firestore
-├── firestore.indexes.json          # Indici Firestore
-├── ngsw-config.json               # Service Worker config (PWA)
+│   ├── export-firestore.js
+│   ├── import-firestore.js
+│   ├── service-account.json
+│   └── service-account-new.json
+├── seed.js
+├── seed-pizze-fuori-menu.js
+├── firestore.rules
+├── firestore.indexes.json
+├── ngsw-config.json
 ├── public/
-│   ├── manifest.webmanifest       # Web App Manifest (PWA)
-│   └── icons/                     # Icone PWA
+│   ├── manifest.webmanifest
+│   └── icons/
 └── firebase.json
 ```
 
 ---
 
-## Caratteristiche
+## Funzionalita
 
-### Menu Pubblico
-- Visualizzazione menu per categorie (Antipasti, Pizze Rosse, Pizze Bianche, Focacce/Calzoni, Dolci, Bevande)
-- Filtri: Vegano, Esclusione allergeni
-- Indicatori visivi: icona foglia verde per vegani, asterisco (*) per surgelati
-- **Item disattivati**: visualizzati con etichetta "NON PIÙ DISPONIBILE PER LA SERATA" e nome barrato
-- Sezione "Fuori Menu" con piatti speciali/seasonal
-- Navigazione responsive con navbar categorie
-- **PWA**: installabile come app sul telefono
-- **Condivisione**: WhatsApp, Facebook, Instagram
+### Menu Pubblico (`/menu`)
+- 6 categorie: Antipasti (26), Pizze Rosse (23), Pizze Bianche (18), Focacce & Calzoni (20), Dolci (7), Bevande (21)
+- Ogni piatto mostra nome, descrizione, prezzo, allergeni EU (14), badge vegano/surgelato
+- Piatti disattivati: etichetta "NON PIU DISPONIBILE PER LA SERATA" con nome barrato
+- Filtro allergeni in tempo reale
+- Indicatore disponibilita numerica per piatto
+- Navbar categorie sticky con scroll orizzontale
 
-### Pannello Admin
-- Autenticazione Firebase (email/password)
-- Gestione menu: CRUD completo, toggle attivo/disattivo, riordinamento
-- Gestione fuori menu: CRUD completo
-- Dashboard: statistiche visite, QR code per il menu, link a homepage
+### Home (`/`)
+- Stato serata (aperta/chiusa) visibile al cliente
+- Messaggio del giorno configurabile dall'admin
+- Orari di apertura configurabili
+- Link diretto al menu
+- PWA installabile (prompt nativo Android/iOS)
 
-### Database (Firestore)
+### Fuori Menu
+- Sezione dedicata visibile solo se la serata e aperta
+- Card aggiornate in tempo reale da Firestore
 
-**Collezioni:**
-- `antipasti`, `pizzeRosse`, `pizzeBianche`, `focacceCalzoni`, `dolci`, `bevande` — MenuItem
-- `fuoriMenu` — FuoriMenu
-- `config` — Configurazione (messaggio del giorno, statistiche)
+### Pannello Admin (`/admin`)
+Tutte le route sono protette da `AuthGuard` (Firebase Authentication).
 
-**Schema MenuItem:**
+| Route | Funzione |
+|---|---|
+| `/admin/login` | Login email/password |
+| `/admin/dashboard` | Toggle serata, QR code scaricabile, accesso rapido |
+| `/admin/gestione-menu` | CRUD completo delle 6 categorie del menu fisso |
+| `/admin/fuori-menu` | CRUD fuori menu + toggle attivo |
+| `/admin/disponibilita-ingredienti` | Toggle disponibile/non disponibile ingredienti |
+| `/admin/disponibilita-antipasti` | Disponibilita numerica antipasti |
+| `/admin/disponibilita-dolci` | Disponibilita numerica dolci |
+| `/admin/disponibilita-bevande` | Disponibilita numerica bevande |
+| `/admin/resoconto-disponibilita` | Vista aggregata disponibilita serata |
+| `/admin/storico-serate` | Registro serate + stampa PDF fuori menu |
+| `/admin/statistiche` | Visite ultimi 7 giorni per giorno/ora/categoria |
+| `/admin/impostazioni` | Orari apertura + messaggio del giorno |
+
+---
+
+## Database Firestore
+
+### Collezioni menu
+`antipasti` · `pizzeRosse` · `pizzeBianche` · `focacceCalzoni` · `dolci` · `bevande`
+
 ```typescript
 interface MenuItem {
   id?: string;
@@ -112,89 +143,45 @@ interface MenuItem {
   nome: string;
   descrizione: string;
   prezzo: number;
-  allergeni: number[];        // Codici allergeni
+  allergeni: number[];
   vegano: boolean;
   surgelato: boolean;
-  attivo: boolean;            // Visibilità pubblica
-  eliminato: boolean;         // Soft delete
+  attivo: boolean;
+  eliminato: boolean;        // soft delete
+  disponibili: number | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
 ```
 
----
+### Collezione `fuoriMenu`
 
-## Diario di Sviluppo
+```typescript
+interface FuoriMenu {
+  id?: string;
+  ordine: number;
+  nome: string;
+  descrizione: string;
+  prezzo: number;
+  categoria: CategoriaMenu;
+  attivo: boolean;
+  eliminato: boolean;
+  disponibili: number | null;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+```
 
-### Sessione 8
+### Altre collezioni
 
-**Refinements finali**
-
-- Sistemato link admin nella homepage (icona ingranaggio)
-- Aggiunto bottone "Torna a Homepage" nella pagina login
-- Risolti problemi di indici Firestore per fuori menu
-- Aggiunta nota su Google Play Protect nella sezione installazione app
-
-### Sessione 7
-
-**UI/UX e PWA**
-
-- Aggiunto popup condivisione (WhatsApp, Facebook, Instagram)
-- Aggiunta responsive design desktop per homepage e barra bottom
-- Aggiunta sezione "Scarica la nostra app" con istruzioni dettagliate
-- Implementato PWA completo con Service Worker e manifest
-
-### Sessione 6
-
-**Migrazione Firebase + PWA**
-
-- Creato nuovo progetto Firebase: `grecospizzeria-47768`
-- Migrati tutti i dati da `grecosmenu` al nuovo progetto
-- Aggiornati environment.ts con nuove credenziali
-- Configurato PWA con Service Worker e Web App Manifest
-
-### Sessione 5
-
-**Dashboard Admin**
-
-- Aggiunto QR code scaricabile dalla dashboard
-- Sistemato layout responsive per desktop
-- Implementato sistema disponibilità giornaliero
-
-### Sessione 4
-
-**Gestione Menu**
-
-- Item disattivati visualizzati come "Non più disponibile per la serata"
-- Modificato MenuService per rimuovere filtro attivo dalla query pubblica
-- Aggiornati tutti i template delle categorie con badge e stili
-
-### Sessione 3
-
-**Database e Seed**
-
-- Creato seed.js per popolamento Firestore
-- Configurate regole Firestore e indici compositi
-- Corretti prezzi, allergeni e descrizioni dal menu fisico
-- Strutturato database con collezioni flat
-
-### Sessione 2
-
-**Indicatori Visivi**
-
-- Aggiunti campi vegano e surgelato al modello MenuItem
-- Implementati badge foglia verde per vegani, asterisco per surgelati
-- Aggiornati template HTML e CSS per tutti i prodotti
-
-### Sessione 1
-
-**Setup Progetto**
-
-- Creazione progetto Angular 21
-- Installazione dipendenze (Bootstrap, Firebase, AngularFire)
-- Configurazione Firebase e autenticazione
-- Struttura cartelle e generazione componenti
-- Setup iniziale Firestore con schema e regole
+| Collezione | Contenuto |
+|---|---|
+| `ingredienti` | `{ nome, disponibile }` |
+| `storici` | `{ dataOra, dataLabel, fuoriMenuAttivi[] }` |
+| `statistiche/{YYYY-MM-DD}` | `{ data, count, ore{}, categorie{} }` |
+| `config/serata` | `{ aperta }` |
+| `config/orari` | `{ giorni[], oraApertura, oraChiusura }` |
+| `config/messaggio` | `{ testo, attivo }` |
 
 ---
 
@@ -210,27 +197,17 @@ Apri `http://localhost:4200/`
 
 ```bash
 node seed.js
-```
-
-> Richiede `scripts/service-account.json` nella cartella scripts.
-
-### Seed Fuori Menu
-
-```bash
 node seed-pizze-fuori-menu.js
 ```
 
-### Esporta/Importa dati
+> Richiede `scripts/service-account.json`.
+
+## Esporta/Importa dati
 
 ```bash
-# Esporta da progetto esistente
 node scripts/export-firestore.js
-
-# Importa nel nuovo progetto
 node scripts/import-firestore.js
 ```
-
-> Richiede `scripts/service-account.json` o `scripts/service-account-new.json`
 
 ## Build
 
@@ -244,50 +221,36 @@ ng build
 firebase deploy --project=grecospizzeria-47768
 ```
 
-> **Nota:** Il progetto predefinito è configurato in `.firebaserc`
-
 ---
 
 ## Comandi Utili
 
-### Sviluppo
 ```bash
-npm start              # Avvia server dev (equivale a ng serve)
-npm run watch         # Build in watch mode
-```
-
-### Test
-```bash
-npm test              # Esegue test unitari ( Karma + Jasmine )
-```
-
-### Build
-```bash
-ng build              # Build produzione
-ng build --configuration development  # Build sviluppo
-```
-
-### Firebase
-```bash
-firebase login        # Accedi a Firebase
-firebase emulators:start  # Avvia emulatori locali
-firebase deploy       # Deploy su Firebase Hosting
-firestore:delete     # Elimina dati (attenzione!)
+npm start                                  # Dev server
+npm run watch                              # Build watch mode
+npm test                                   # Test unitari (Vitest)
+firebase emulators:start                   # Emulatori locali
 ```
 
 ---
 
 ## Variabili d'Ambiente
 
-Le credenziali Firebase sono configurate in:
+Credenziali Firebase in:
 - `src/environments/environment.ts` — produzione
 - `src/environments/environment.development.ts` — sviluppo
 
-Il file `serviceAccountKey.json` (chiave admin) è richiesto per il seed del database e deve essere escluso dal versionamento (già presente in `.gitignore`).
+`serviceAccountKey.json` richiesto per seed e script, escluso dal versionamento (`.gitignore`).
 
 ---
 
-## Risorse Esterne
+## Release
+
+Vedi [`RELEASE_v1.0.0.md`](./RELEASE_v1.0.0.md) per la documentazione completa della prima release (04-03-2026).
+
+---
+
+## Risorse
 
 - [Firebase Console](https://console.firebase.google.com/)
 - [Angular Docs](https://angular.dev/)
