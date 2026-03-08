@@ -6,7 +6,7 @@ Menu digitale con QR code e pannello admin per Grecos Pizzeria.
 **Sviluppatrice:** Hacman Viorica Gabriela
 **Stack:** Angular 21 + Bootstrap 5 + Bootstrap Icons + Firebase (Firestore + Auth + Hosting)
 **URL:** https://grecospizzeria-47768.web.app
-**Versione:** v1.0.0 — 04-03-2026
+**Versione:** v1.1.0 — 08-03-2026
 
 ---
 
@@ -125,8 +125,8 @@ Tutte le route sono protette da `AuthGuard` (Firebase Authentication).
 | `/admin/disponibilita-dolci` | Disponibilita numerica dolci |
 | `/admin/disponibilita-bevande` | Disponibilita numerica bevande |
 | `/admin/resoconto-disponibilita` | Vista aggregata disponibilita serata |
-| `/admin/storico-serate` | Registro serate + stampa PDF fuori menu |
-| `/admin/statistiche` | Visite ultimi 7 giorni per giorno/ora/categoria |
+| `/admin/storico-serate` | Registro serate + PDF fuori menu + storico scaricabile per giorno |
+| `/admin/statistiche` | Visite ultimi 7 o 30 giorni, grafico scrollabile, auto-refresh 3 min |
 | `/admin/impostazioni` | Orari apertura + messaggio del giorno |
 
 ---
@@ -247,6 +247,8 @@ Credenziali Firebase in:
 ## Release
 
 Vedi [`RELEASE_v1.0.0.md`](./RELEASE_v1.0.0.md) per la documentazione completa della prima release (04-03-2026).
+
+Vedi [`CHANGELOG.md`](./CHANGELOG.md) per le note di ogni versione.
 
 ---
 
