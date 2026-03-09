@@ -78,15 +78,6 @@ Miglioramento dell'esperienza utente per gli ordini da asporto:
 
 ---
 
-## Prossimi sviluppi
-
-- Notifiche push ai clienti
-- Prenotazioni online dai clienti (fuori dal pannello admin)
-- Integrazione con sistemi di pagamento
-- App nativa iOS/Android
-
----
-
 ## Link Utili
 
 - [Sito web](https://grecospizzeria-47768.web.app)
