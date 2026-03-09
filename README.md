@@ -6,7 +6,7 @@ Menu digitale con QR code e pannello admin per Grecos Pizzeria.
 **Sviluppatrice:** Hacman Viorica Gabriela
 **Stack:** Angular 21 + Bootstrap 5 + Bootstrap Icons + Firebase (Firestore + Auth + Hosting)
 **URL:** https://grecospizzeria-47768.web.app
-**Versione:** v1.1.0 — 08-03-2026
+**Versione:** v1.4.0 — 09-03-2026
 
 ---
 

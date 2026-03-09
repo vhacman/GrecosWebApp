@@ -15,9 +15,86 @@ basate in parte sull'analisi comportamentale degli utenti tramite **Microsoft Cl
 
 ---
 
+## v1.1.6 — 09-03-2026
+
+### Novità — Tracking piatti più curiosati
+
+Ogni apertura del bottom-sheet dettaglio (menu normale e fuori menu) registra
+un tap in Firestore sotto `statistiche/YYYY-MM-DD.piatti.{nome}`.
+
+La dashboard statistiche mostra un ranking **top-10 "Piatti più curiosati"**
+sopra il ranking categorie, con numero di posizione, nome e conteggio tap.
+
+Utile per capire quali piatti attraggono curiosità indipendentemente dagli ordini
+effettivi — utile per decidere cosa mettere in evidenza o nel fuori menu.
+
+**File modificati:**
+```
+src/app/services/config.ts              ← registraTapPiatto(), topPiatti(), StatisticaGiorno.piatti
+src/app/shared/item-detail-modal/item-detail-modal.ts
+src/app/public/menu/fuori-menu-sezione/fuori-menu-sezione.ts
+src/app/admin/statistiche/statistiche.ts
+src/app/admin/statistiche/statistiche.html
+```
+
+---
+
+## v1.1.5 — 09-03-2026
+
+### Novità — Statistiche: filtro range di date personalizzato
+
+Sostituito il selettore fisso 7gg/30gg con due input `date` (da / a) in una barra
+sticky sotto l'header. L'utente può scegliere qualsiasi intervallo dal passato a oggi.
+
+`getStatisticheAggregate()` ora accetta `da: string, a: string` (ISO YYYY-MM-DD)
+invece di `periodoGiorni: number`. Itera giorno per giorno tra le due date.
+Il KPI "N giorni" si aggiorna dinamicamente in base al range selezionato.
+Le etichette del grafico si adattano: formato `gg/mm` per range > 14 giorni,
+`giorno gg` per range più corti.
+
+**File modificati:**
+```
+src/app/services/config.ts
+src/app/admin/statistiche/statistiche.ts
+src/app/admin/statistiche/statistiche.html
+src/app/admin/statistiche/statistiche.css
+```
+
+---
+
+## v1.1.4 — 09-03-2026
+
+### Fix — Allergeni non tradotti in inglese
+
+I nomi degli allergeni nei modal (righe menu e fuori menu) erano hardcoded in
+italiano tramite `getAllergeniNomi()` da `allergeni.constants.ts`.
+Sostituito con `lingua.t('all_N')` in `ItemDetailModal` e `FuoriMenuSezione` —
+i nomi si aggiornano reattivamente al cambio lingua usando le chiavi `all_1`…`all_14`
+già presenti nei dizionari IT/EN.
+
+---
+
+## v1.1.3 — 09-03-2026
+
+### Novità — Allergeni sui piatti fuori menu
+
+Il modello `FuoriMenu` è stato esteso con i campi `allergeni?: number[]` e
+`surgelato?: boolean`. Il popup dettaglio (tap sulla card fuori menu) mostra ora
+gli allergeni come pill individuali.
+
+Per i prodotti **fatti in casa** appare un banner oro con disclaimer:
+*"Fatto in casa — ingredienti possono variare. Chiedere al personale per allergie specifiche."*
+Per i prodotti **surgelati industriali** (`surgelato: true`) gli allergeni sono
+quelli da etichetta e il disclaimer non viene mostrato.
+
+Migrazione Firestore (`scripts/migrate-fuori-menu-allergeni.js`) ha aggiornato
+tutti e 46 i documenti `fuoriMenu` in una singola esecuzione idempotente.
+
+---
+
 ## v1.1.2 — 09-03-2026
 
-### Righe menu cliccabili — bottom-sheet dettaglio piatto
+### Novità — Righe menu cliccabili — bottom-sheet dettaglio piatto
 
 I dati Clarity mostravano utenti che toccavano nomi e descrizioni dei piatti
 aspettandosi un'azione. Ogni riga del menu è ora cliccabile e apre un
@@ -92,7 +169,7 @@ pieno `#C1272D` con animazione `pulse` per catturare l'attenzione.
 
 ## Aggiornamenti Modello Dati
 
-### `FuoriMenu` — nuovi campi
+### `FuoriMenu` — nuovi campi (v1.1.3)
 
 ```typescript
 allergeni?:  number[];   // allergeni EU indicativi (opzionale)
@@ -101,6 +178,12 @@ surgelato?:  boolean;    // true per prodotti industriali da etichetta
 
 Il campo `allergeni` è **opzionale** per retrocompatibilità con i documenti
 precedenti alla migrazione.
+
+### `StatisticaGiorno` — nuovo campo (v1.1.6)
+
+```typescript
+piatti: Record<string, number>;  // conteggio tap per nome piatto
+```
 
 ### Migrazione Firestore eseguita — 09-03-2026
 
@@ -128,14 +211,15 @@ Il popup dettaglio ora mostra:
 
 ---
 
-## File modificati
+## File modificati (riepilogo v1.1.x)
 
 ```
+src/app/services/config.ts
+src/app/app.config.ts
 src/app/core/models/fuori-menu.ts
-src/app/core/models/menu-item.ts (invariato)
 src/app/core/i18n/translations.it.ts
 src/app/core/i18n/translations.en.ts
-src/app/shared/item-detail-modal/           ← nuovo componente
+src/app/shared/item-detail-modal/           ← nuovo componente (v1.1.2)
 src/app/public/menu/antipasti/
 src/app/public/menu/pizze-rosse/
 src/app/public/menu/pizze-bianche/
@@ -143,9 +227,10 @@ src/app/public/menu/focacce-calzoni/
 src/app/public/menu/dolci/
 src/app/public/menu/bevande/
 src/app/public/menu/fuori-menu-sezione/
+src/app/admin/statistiche/
 src/styles.css
-scripts/migrate-fuori-menu-allergeni.js     ← nuovo script
-scripts/seed.js                             ← fuoriMenuItem() aggiornata + allergeni
+scripts/migrate-fuori-menu-allergeni.js     ← nuovo script (v1.1.3)
+scripts/seed.js
 ```
 
 ---
@@ -164,4 +249,4 @@ scripts/seed.js                             ← fuoriMenuItem() aggiornata + all
 
 ---
 
-*Documento generato il 09-03-2026 — Grecos Pizzeria, Roma*
+*Documento aggiornato il 09-03-2026 — Grecos Pizzeria, Roma*

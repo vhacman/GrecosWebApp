@@ -5,6 +5,120 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v1.4.0] — 09-03-2026
+
+### Novità
+
+- **Autocomplete asporto con prezzi automatici**
+  - Quando si inserisce un nuovo ordine asporto, digitando il nome del prodotto appare un dropdown con i prodotti del menu che contengono quella parte di nome
+  - Cliccando su un prodotto, vengono inseriti automaticamente nome e prezzo
+  - Ricerca filtrata per categoria:
+    - Pizze → cerca solo pizze rosse, bianche e fuori menu
+    - Fritti → cerca solo antipasti, focacce/calzoni e fuori menu
+    - Altro → cerca solo dolci, bevande e fuori menu
+  - Se non trova corrispondenze, permette inserimento manuale
+
+---
+
+## [v1.3.0] — 09-03-2026
+
+### Novità
+
+- **Chiusura prenotazioni (locale pieno)**
+  - Nuovo toggle in admin prenotazioni: "CHIUDI PRENOTAZIONI" / "APRI PRENOTAZIONI"
+  - Funziona per qualsiasi giorno della settimana (non solo giorni di apertura)
+  - Homepage: mostra banner "Prenotazioni chiuse — Il locale è pieno per questa sera. Prova a prenotare per un giorno successivo!"
+  - Se il giorno odierno è aperto ma le prenotazioni sono chiuse, mostra il messaggio per quel giorno specifico
+
+- **Chiusura asporto (cucina piena)**
+  - Nuovo toggle in admin asporto: "CHIUDI ASPORTO" / "APRI ASPORTO"
+  - Funziona per qualsiasi giorno della settimana
+  - Stessa logica di visualizzazione in homepage delle prenotazioni chiuse
+
+- **PDF asporto**
+  - Nuovo bottone in admin asporto per scaricare PDF con riepilogo ordini del giorno
+  - Include: orario, nome cliente, numero pizze, numero fritti, note, totale incasso
+
+---
+
+## [v1.2.0] — 09-03-2026
+
+### Novità
+
+- **Prenotazioni tavoli — sistema completo**
+  Nuova sezione admin (`/admin/prenotazioni`) per gestire le prenotazioni in tempo reale.
+  - Navigazione per settimane (Gio/Ven/Sab/Dom) con gruppo visivo e popup calendario mensile per saltare a qualsiasi settimana dell'anno
+  - KPI giornalieri: tavoli, coperti totali, seggioloni
+  - Aggiunta prenotazione con campi: nome, telefono (opzionale), zona, persone, seggioloni, orario (slot fissi o libero), note
+  - Eliminazione con conferma
+  - Toggle "arrivata" disponibile solo per date passate/oggi (icona orologio per date future)
+  - Toast in-app real-time quando un'altra sessione admin aggiunge una prenotazione
+  - Ogni prenotazione registra chi l'ha inserita (`creatoDa`)
+  - PDF scaricabile giornalmente con intestazione Grecos, KPI riepilogo e tabella completa
+  - Calendario dinamico fino al 31/12 dell'anno successivo (si aggiorna automaticamente ogni anno)
+
+- **Modalità estate / inverno**
+  Toggle in Impostazioni che commuta:
+  - Giorni di apertura: inverno = Ven/Sab/Dom, estate = Gio/Ven/Sab/Dom
+  - Zone prenotazione: inverno = Sala interna / Veranda, estate = Terrazzo esterno / Veranda
+  - Attivando la modalità estate compare automaticamente per 20 giorni un banner in homepage:
+    *"Informiamo i nostri clienti che siamo aperti anche il Giovedì"*
+
+- **Chiusure / ferie**
+  Nuova sezione admin (`/admin/chiusure`) raggiungibile da Strumenti:
+  - Lista periodi di chiusura con indicatore colorato (attiva / futura / passata)
+  - Aggiunta chiusura con data dal/al e motivo
+  - Eliminazione con conferma
+  - Le date chiuse scompaiono automaticamente dal calendario prenotazioni
+  - Homepage: banner rosso *"Il ristorante è chiuso fino al [data] — [motivo]"* quando attiva; banner arancio se la prossima chiusura è entro 14 giorni
+
+- **Statistiche — sezione prenotazioni**
+  La dashboard statistiche integra ora i dati delle prenotazioni in parallelo alle visite:
+  - KPI: tavoli totali, coperti totali, media coperti/tavolo, seggioloni
+  - Grafico "Prenotazioni giornaliere" (barre verdi) affianca il grafico visite
+  - Insight: orario più prenotato, zona preferita, giorno della settimana top
+  - Entrambi i grafici evidenziano i giorni di chiusura con pattern a righe diagonali
+
+---
+
+## [v1.1.6] — 09-03-2026
+
+### Novità
+
+- **Statistiche — piatti più curiosati**
+  Ogni apertura del bottom-sheet dettaglio piatto (menu normale + fuori menu) registra
+  un tap in Firestore (`statistiche/YYYY-MM-DD.piatti.{nome}`).
+  La dashboard mostra un ranking top-10 "Piatti più curiosati" sopra il ranking categorie.
+  Utile per capire cosa attira l'attenzione dei clienti indipendentemente dagli ordini.
+
+---
+
+## [v1.1.5] — 09-03-2026
+
+### Novità
+
+- **Statistiche — filtro range di date personalizzato**
+  Sostituito il selettore fisso 7gg/30gg con due input `date` (da / a) nella barra
+  sotto l'header. L'utente può scegliere qualsiasi intervallo dal passato a oggi.
+  `getStatisticheAggregate()` ora accetta `da: string, a: string` (ISO YYYY-MM-DD)
+  invece di `periodoGiorni`. Il KPI "N giorni" si aggiorna dinamicamente in base
+  al range selezionato. La barra data è parte del blocco sticky, sempre visibile.
+
+---
+
+## [v1.1.4] — 09-03-2026
+
+### Fix
+
+- **Allergeni non tradotti in inglese**
+  I nomi degli allergeni nei modal (righe menu e fuori menu) erano hardcoded in italiano
+  tramite `getAllergeniNomi()` da `allergeni.constants.ts`.
+  Sostituito con `lingua.t('all_N')` in entrambi i componenti (`ItemDetailModal`,
+  `FuoriMenuSezione`) — ora i nomi si aggiornano reattivamente al cambio lingua
+  usando le chiavi `all_1`…`all_14` già presenti nei dizionari IT/EN.
+
+---
+
 ## [v1.1.3] — 09-03-2026
 
 ### Novità
