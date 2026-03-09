@@ -1,260 +1,96 @@
 # Grecos Pizzeria — Menu Digitale
 
-Menu digitale con QR code e pannello admin per Grecos Pizzeria.
+Menu digitale con QR code e pannello di gestione per Grecos Pizzeria.
 
-**Cliente:** Grecos Pizzeria (@grecos11)
-**Sviluppatrice:** Hacman Viorica Gabriela
-**Stack:** Angular 21 + Bootstrap 5 + Bootstrap Icons + Firebase (Firestore + Auth + Hosting)
-**URL:** https://grecospizzeria-47768.web.app
+**Cliente:** Grecos Pizzeria (@grecos11)  
+**Sviluppatrice:** Hacman Viorica Gabriela  
+**URL:** https://grecospizzeria-47768.web.app  
 **Versione:** v1.4.0 — 09-03-2026
 
 ---
 
-## Progetti Firebase
+## Cos'è
 
-- **Produzione:** `grecospizzeria-47768` (https://grecospizzeria-47768.web.app)
-- **Legacy:** `grecosmenu` (non piu in uso)
-
----
-
-## Struttura del Progetto
-
-```
-GrecosMenu/
-├── src/
-│   ├── app/
-│   │   ├── components/
-│   │   │   └── install-prompt.ts           # Prompt installazione PWA
-│   │   ├── core/
-│   │   │   ├── models/
-│   │   │   │   ├── menu-item.ts            # MenuItem + CategoriaMenu
-│   │   │   │   ├── fuori-menu.ts           # FuoriMenu
-│   │   │   │   ├── ingrediente.ts          # Ingrediente
-│   │   │   │   ├── storico-serata.ts       # StoricaSerata
-│   │   │   │   └── utente.ts               # Utente
-│   │   │   ├── guards/
-│   │   │   │   └── auth-guard.ts           # CanActivateFn
-│   │   │   └── pipes/
-│   │   │       └── parse-ingredienti.pipe.ts
-│   │   ├── services/
-│   │   │   ├── menu.ts                     # CRUD menu + fuori menu + ingredienti
-│   │   │   ├── auth.ts                     # Autenticazione Firebase
-│   │   │   └── config.ts                   # Serata, orari, messaggio, statistiche, storici
-│   │   ├── public/
-│   │   │   ├── home/                       # Homepage pubblica
-│   │   │   ├── menu/                       # Menu pubblico
-│   │   │   │   ├── antipasti/
-│   │   │   │   ├── pizze-rosse/
-│   │   │   │   ├── pizze-bianche/
-│   │   │   │   ├── focacce-calzoni/
-│   │   │   │   ├── dolci/
-│   │   │   │   ├── bevande/
-│   │   │   │   ├── filtri/
-│   │   │   │   └── fuori-menu-sezione/
-│   │   │   └── layout/
-│   │   │       ├── navbar-categorie/       # Navbar sticky scroll orizzontale
-│   │   │       └── fuori-menu-hero/        # Hero fuori menu
-│   │   └── admin/
-│   │       ├── login/
-│   │       ├── dashboard/
-│   │       ├── gestione-menu/
-│   │       ├── gestione-fuori-menu/
-│   │       ├── disponibilita-ingredienti/
-│   │       ├── disponibilita-antipasti/
-│   │       ├── disponibilita-dolci/
-│   │       ├── disponibilita-bevande/
-│   │       ├── resoconto-disponibilita/
-│   │       ├── storico-serate/
-│   │       ├── statistiche/
-│   │       └── impostazioni/
-│   ├── environments/
-│   │   ├── environment.ts
-│   │   └── environment.development.ts
-│   ├── styles.css
-│   └── index.html
-├── scripts/
-│   ├── export-firestore.js
-│   ├── import-firestore.js
-│   ├── service-account.json
-│   └── service-account-new.json
-├── seed.js
-├── seed-pizze-fuori-menu.js
-├── firestore.rules
-├── firestore.indexes.json
-├── ngsw-config.json
-├── public/
-│   ├── manifest.webmanifest
-│   └── icons/
-└── firebase.json
-```
+Un'applicazione web che permette ai clienti di consultare il menu tramite QR code sul proprio telefono, e al personale della pizzeria di gestire tutto (menu, prenotazioni, asporto, disponibilità) da un pannello di amministrazione.
 
 ---
 
-## Funzionalita
+## Evoluzione del Progetto
 
-### Menu Pubblico (`/menu`)
-- 6 categorie: Antipasti (26), Pizze Rosse (23), Pizze Bianche (18), Focacce & Calzoni (20), Dolci (7), Bevande (21)
-- Ogni piatto mostra nome, descrizione, prezzo, allergeni EU (14), badge vegano/surgelato
-- Piatti disattivati: etichetta "NON PIU DISPONIBILE PER LA SERATA" con nome barrato
-- Filtro allergeni in tempo reale
-- Indicatore disponibilita numerica per piatto
-- Navbar categorie sticky con scroll orizzontale
+### v1.0.0 — Prima release (04-03-2026)
 
-### Home (`/`)
-- Stato serata (aperta/chiusa) visibile al cliente
-- Messaggio del giorno configurabile dall'admin
-- Orari di apertura configurabili
-- Link diretto al menu
-- PWA installabile (prompt nativo Android/iOS)
+Lancio del progetto con le funzionalità base:
 
-### Fuori Menu
-- Sezione dedicata visibile solo se la serata e aperta
-- Card aggiornate in tempo reale da Firestore
+- **Menu digitale** consultabile dai clienti tramite QR code
+- **6 categorie** di prodotti: Antipasti, Pizze Rosse, Pizze Bianche, Focacce & Calzoni, Dolci, Bevande
+- **Scheda piatto** completa: nome, descrizione, prezzo, allergeni (simboli EU), indicatore vegano/surgelato
+- **Filtro allergeni** in tempo reale
+- **Navigazione categorie** con menu orizzontale sticky
+- **PWA installabile** sui telefoni (Android/iOS)
+- **Pannello admin** con login sicuro per gestire il menu
+- **Gestione piatti**: aggiunta, modifica, attivazione/disattivazione, eliminazione
+- **Fuori menu**: sezione dedicata ai piatti speciali della serata
+- **Disponibilità ingredienti**: possibilità di barrare ingredienti non disponibili
+- **Messaggio del giorno**: banner personalizzabile in homepage
+- **Statistiche base**: contatore visite
 
-### Pannello Admin (`/admin`)
-Tutte le route sono protette da `AuthGuard` (Firebase Authentication).
+### v1.1.x — Miglioramenti incrementali
 
-| Route | Funzione |
-|---|---|
-| `/admin/login` | Login email/password |
-| `/admin/dashboard` | Toggle serata, QR code scaricabile, accesso rapido |
-| `/admin/gestione-menu` | CRUD completo delle 6 categorie del menu fisso |
-| `/admin/fuori-menu` | CRUD fuori menu + toggle attivo |
-| `/admin/disponibilita-ingredienti` | Toggle disponibile/non disponibile ingredienti |
-| `/admin/disponibilita-antipasti` | Disponibilita numerica antipasti |
-| `/admin/disponibilita-dolci` | Disponibilita numerica dolci |
-| `/admin/disponibilita-bevande` | Disponibilita numerica bevande |
-| `/admin/resoconto-disponibilita` | Vista aggregata disponibilita serata |
-| `/admin/storico-serate` | Registro serate + PDF fuori menu + storico scaricabile per giorno |
-| `/admin/statistiche` | Visite ultimi 7 o 30 giorni, grafico scrollabile, auto-refresh 3 min |
-| `/admin/impostazioni` | Orari apertura + messaggio del giorno |
+- **Modalità estate/inverno**: cambia automaticamente i giorni di apertura (inverno: Ven/Sab/Dom, estate: anche il Giovedì) e le zone disponibili
+- **Stagione estiva**: banner automatico che informa i clienti dell'apertura del giovedì
+- **Chiusure/feste**: gestione dei periodi di chiusura con data inizio/fine e motivo
+- **Storico serate**: archivio dei piatti serviti ogni sera, esportabile in PDF
+- **Statistiche avanzate**: grafici visite, dispositivi utilizzati, orari di picco, categorie più visitate
 
----
+### v1.2.0 — Gestione Prenotazioni (09-03-2026)
 
-## Database Firestore
+Introduzione del sistema completo di prenotazioni tavoli:
 
-### Collezioni menu
-`antipasti` · `pizzeRosse` · `pizzeBianche` · `focacceCalzoni` · `dolci` · `bevande`
+- **Sezione prenotazioni** nella dashboard admin
+- **Navigazione per settimane** con selezione del giorno
+- **Calendario esteso** fino a 12 mesi
+- **Lista prenotazioni** con tutti i dettagli: nome, telefono, orario, persone, zona, seggioloni, note
+- **Aggiunta prenotazioni** con form guidato
+- **Toggle "arrivata"** per segnare i clienti presenti
+- **Notifiche in tempo reale** quando un'altra persona aggiunge una prenotazione
+- **PDF prenotazioni** scaricabile con riepilogo giornaliero
+- **Conferma eliminazione** per evitare cancellazioni accidentali
 
-```typescript
-interface MenuItem {
-  id?: string;
-  ordine: number;
-  nome: string;
-  descrizione: string;
-  prezzo: number;
-  allergeni: number[];
-  vegano: boolean;
-  surgelato: boolean;
-  attivo: boolean;
-  eliminato: boolean;        // soft delete
-  disponibili: number | null;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
-```
+### v1.3.0 — Chiusure e PDF (09-03-2026)
 
-### Collezione `fuoriMenu`
+Funzionalità aggiuntive per gestire il pieno:
 
-```typescript
-interface FuoriMenu {
-  id?: string;
-  ordine: number;
-  nome: string;
-  descrizione: string;
-  prezzo: number;
-  categoria: CategoriaMenu;
-  attivo: boolean;
-  eliminato: boolean;
-  disponibili: number | null;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
-```
+- **Chiudi prenotazioni**: toggle per bloccare nuove prenotazioni quando il locale è pieno
+- **Messaggio automatico**: in homepage appare "Prenotazioni chiuse — Il locale è pieno per questa sera"
+- **Funziona per qualsiasi giorno** della settimana
+- **Chiudi asporto**: analogo toggle per bloccare ordini da asporto
+- **PDF asporto**: scaricabile con riepilogo ordini del giorno, totale incasso
 
-### Altre collezioni
+### v1.4.0 — Autocomplete Asporto (09-03-2026)
 
-| Collezione | Contenuto |
-|---|---|
-| `ingredienti` | `{ nome, disponibile }` |
-| `storici` | `{ dataOra, dataLabel, fuoriMenuAttivi[] }` |
-| `statistiche/{YYYY-MM-DD}` | `{ data, count, ore{}, categorie{} }` |
-| `config/serata` | `{ aperta }` |
-| `config/orari` | `{ giorni[], oraApertura, oraChiusura }` |
-| `config/messaggio` | `{ testo, attivo }` |
+Miglioramento dell'esperienza utente per gli ordini da asporto:
+
+- **Ricerca prodotti intelligente**: mentre si inserisce il nome, appaiono suggerimenti dal menu
+- **Inserimento automatico**: cliccando su un suggerimento, nome e prezzo si inseriscono da soli
+- **Ricerca per categoria**: le pizze cercano solo tra le pizze, i fritti solo tra i fritti, ecc.
+- **Fuori menu sempre incluso**: i piatti speciali appaiono nei risultati di tutte le categorie
+- **Inserimento manuale**: se non trova corrispondenze, si può inserire a mano
 
 ---
 
-## Avvio in locale
+## Prossimi sviluppi
 
-```bash
-ng serve
-```
-
-Apri `http://localhost:4200/`
-
-## Seed database
-
-```bash
-node seed.js
-node seed-pizze-fuori-menu.js
-```
-
-> Richiede `scripts/service-account.json`.
-
-## Esporta/Importa dati
-
-```bash
-node scripts/export-firestore.js
-node scripts/import-firestore.js
-```
-
-## Build
-
-```bash
-ng build
-```
-
-## Deploy
-
-```bash
-firebase deploy --project=grecospizzeria-47768
-```
+- Notifiche push ai clienti
+- Prenotazioni online dai clienti (fuori dal pannello admin)
+- Integrazione con sistemi di pagamento
+- App nativa iOS/Android
 
 ---
 
-## Comandi Utili
+## Link Utili
 
-```bash
-npm start                                  # Dev server
-npm run watch                              # Build watch mode
-npm test                                   # Test unitari (Vitest)
-firebase emulators:start                   # Emulatori locali
-```
-
----
-
-## Variabili d'Ambiente
-
-Credenziali Firebase in:
-- `src/environments/environment.ts` — produzione
-- `src/environments/environment.development.ts` — sviluppo
-
-`serviceAccountKey.json` richiesto per seed e script, escluso dal versionamento (`.gitignore`).
-
----
-
-## Release
-
-Vedi [`RELEASE_v1.0.0.md`](./RELEASE_v1.0.0.md) per la documentazione completa della prima release (04-03-2026).
-
-Vedi [`CHANGELOG.md`](./CHANGELOG.md) per le note di ogni versione.
-
----
-
-## Risorse
-
-- [Firebase Console](https://console.firebase.google.com/)
-- [Angular Docs](https://angular.dev/)
-- [Bootstrap 5](https://getbootstrap.com/)
-- [Bootstrap Icons](https://icons.getbootstrap.com/)
+- [Sito web](https://grecospizzeria-47768.web.app)
+- [Console Firebase](https://console.firebase.google.com/)
+- [Documentazione tecnica](./CHANGELOG.md)
+- [Manuale utente](./MANUALE_ADMIN.md)
+- [Release precedenti](./RELEASE_v1.3.0.md)
