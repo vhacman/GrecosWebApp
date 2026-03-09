@@ -5,6 +5,54 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v1.1.3] — 09-03-2026
+
+### Novità
+
+- **Allergeni sui piatti fuori menu**
+  Il modello `FuoriMenu` è stato esteso con i campi `allergeni?: number[]` e
+  `surgelato?: boolean`. Il popup dettaglio (tap sulla card fuori menu) mostra ora
+  gli allergeni come pill individuali.
+  Per i prodotti **fatti in casa** appare un banner oro con disclaimer:
+  *"Fatto in casa — ingredienti possono variare. Chiedere al personale per allergie specifiche."*
+  Per i prodotti **surgelati industriali** (`surgelato: true`) gli allergeni sono
+  quelli da etichetta e il disclaimer non viene mostrato.
+  Migrazione Firestore (`scripts/migrate-fuori-menu-allergeni.js`) ha aggiornato
+  tutti e 46 i documenti `fuoriMenu` in una singola esecuzione idempotente.
+
+---
+
+## [v1.1.2] — 09-03-2026
+
+### Novità
+
+- **Righe menu cliccabili — bottom-sheet dettaglio piatto**
+  I dati Microsoft Clarity (07–09 Mar) mostravano utenti che toccavano nomi e descrizioni
+  dei piatti aspettandosi un'azione. Aggiunto un bottom-sheet modale che si apre al tap su
+  qualsiasi riga del menu: mostra nome, descrizione completa, lista allergeni espansa (pill
+  per allergene) e prezzo. Rimosso il vecchio componente `AllergeniExpand` inline — gli
+  allergeni sono ora accessibili solo dal modal. Ogni riga mostra il testo
+  *"tocca per dettagli e allergeni"* (IT) / *"tap for details & allergens"* (EN) come
+  istruzione visibile.
+
+---
+
+## [v1.1.1] — 09-03-2026
+
+### Fix
+
+- **Errori IndexedDB Firebase (112 errori in 4 giorni)**
+  L'analisi di Microsoft Clarity rivelava 111 sessioni con errore:
+  `refusing to open indexeddb database due to potential corruption`
+  Il problema era causato da Firestore che usava IndexedDB per la cache offline
+  persistente. Su alcuni browser/dispositivi (specialmente mobile) questo database
+  locale si corrompeva, generando l'errore a ogni visita successiva.
+  **Fix:** sostituita la cache IndexedDB con `memoryLocalCache()` in `app.config.ts`.
+  Firestore ora usa solo la memoria RAM — nessun dato scritto su disco, zero corruzioni.
+  Unica conseguenza accettabile: il sito non mostra dati offline (irrilevante per un menu).
+
+---
+
 ## [v1.1.0] — 08-03-2026
 
 ### Fix
