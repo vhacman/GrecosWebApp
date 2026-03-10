@@ -5,7 +5,7 @@ Menu digitale con QR code e pannello di gestione per Grecos Pizzeria.
 **Cliente:** Grecos Pizzeria (@grecos11)  
 **Sviluppatrice:** Hacman Viorica Gabriela  
 **URL:** https://grecospizzeria-47768.web.app  
-**Versione:** v1.4.0 — 09-03-2026
+**Versione:** v1.6.0 — 10-03-2026
 
 ---
 
@@ -76,7 +76,21 @@ Miglioramento dell'esperienza utente per gli ordini da asporto:
 - **Fuori menu sempre incluso**: i piatti speciali appaiono nei risultati di tutte le categorie
 - **Inserimento manuale**: se non trova corrispondenze, si può inserire a mano
 
----
+### v1.5.0 — Specialità & QR (10-03-2026)
+
+Miglioramenti alla visibilità dei fuori menu e alla condivisione:
+
+- **Tab Specialità nel menu**: nuova prima tab ⭐ nella navbar del menu pubblico con tutti i fuori menu attivi raggruppati per categoria — sempre visibile, anche a cucina chiusa
+- **QR con logo nel pannello admin**: il QR generato dagli Strumenti usa `HomepageQR.png` con il logo Grecos al centro, sia per PNG che per PDF
+- **QR dolci**: generato `grecos-qr-dolci.pdf` stampabile con QR puntato direttamente alla sezione dolci (`/menu?cat=dolci`)
+- **Link diretto per categoria**: la route `/menu` accetta `?cat=` per aprire una specifica categoria — utile per QR dedicati per ogni sezione del locale
+- **Condivisione QR dai clienti**: nel popup "Condividi" della homepage, bottone QR Code che apre il foglio di condivisione nativo del telefono (Web Share API)
+- **Popup Condividi ridisegnato**: sostituito il modal con gradienti con un bottom sheet pulito, coerente con lo stile dell'app
+- **LinkedIn nel footer homepage**: icona LinkedIn affiancata al copyright
+
+### v1.6.0 — Manuale Utente (10-03-2026)
+
+- **Bottone "Manuale d'Uso dell'App"** in homepage: scarica direttamente il PDF del manuale utente (`manuale-utente.pdf`) con un click
 
 ## Link Utili
 
@@ -84,4 +98,4 @@ Miglioramento dell'esperienza utente per gli ordini da asporto:
 - [Console Firebase](https://console.firebase.google.com/)
 - [Documentazione tecnica](./CHANGELOG.md)
 - [Manuale utente](./MANUALE_ADMIN.md)
-- [Release precedenti](./RELEASE_v1.3.0.md)
+- [Release precedenti](./releases/RELEASE_v1.5.0.md)

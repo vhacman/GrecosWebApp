@@ -5,6 +5,41 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v1.5.0] — 10-03-2026
+
+### Novità
+
+- **Sezione "Specialità" nel menu pubblico**
+  Nuova tab ⭐ Specialità come prima voce della navbar del menu. Mostra tutti i fuori menu
+  attivi raggruppati per categoria (con card cliccabili, popup dettaglio, allergeni, IT/EN).
+  Sempre visibile anche a cucina chiusa. Stato vuoto se nessun fuori menu attivo.
+
+- **QR code con logo nel pannello admin**
+  Il QR generato da `Strumenti → QR Code` usa ora `HomepageQR.png` (logo Grecos al centro)
+  invece della generazione dinamica via libreria. Download PNG e PDF aggiornati di conseguenza.
+
+- **QR dedicato sezione Dolci**
+  Generato `grecos-qr-dolci.pdf` (A4, stile Grecos) con QR puntato a `/menu?cat=dolci`.
+  Da stampare e posizionare vicino al porta-dolci.
+
+- **Link diretto per categoria via `?cat=`**
+  La route `/menu` ora supporta `?cat=dolci`, `?cat=pizzeRosse`, ecc. per aprire
+  direttamente la categoria desiderata. Utile per QR stampati per sezione.
+
+- **Condivisione QR dai clienti**
+  Nel popup "Condividi" della homepage aggiunto bottone QR Code. Su mobile usa il Web Share
+  API per condividere `HomepageQR.png` nativamente (WhatsApp, AirDrop, ecc.).
+  Fallback download automatico su browser non supportati.
+
+- **Popup Condividi ridisegnato**
+  Sostituito il modal con gradienti/emoji con un bottom sheet pulito: righe semplici con
+  icona colorata e label, coerente con lo stile dell'app.
+
+- **LinkedIn nel footer homepage**
+  Icona LinkedIn affiancata al copyright in fondo alla homepage.
+
+---
+
 ## [v1.4.0] — 09-03-2026
 
 ### Novità
