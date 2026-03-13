@@ -1,42 +1,49 @@
-# Grecos Pizzeria — Menu Digitale
-## Release Note · v1.4.0 · 09-03-2026
+# Release v1.4.0 — 13-03-2026
+
+## Cucina Intelligente, Fix Mobile e Sicurezza Firestore
 
 ---
 
-## Panoramica
+### Cucina intelligente
 
-Release che introduce l'**autocomplete intelligente** per gli ordini da asporto,
-permettendo di cercare i prodotti del menu e inserire automaticamente nome e prezzo.
-Continua inoltre la logica delle precedenti release v1.3.0 (chiusura prenotazioni/asporto e PDF asporto).
+**Banner di conferma chiusura cucina**
+Cliccando "Cucina aperta → chiusa" appare un bottom-sheet di conferma:
+- Descrive l'effetto: i clienti vedranno solo Speciali, Dolci e Bevande
+- Suggerisce il caso d'uso tipico (fine serata, pulizie in corso)
+- Informa che la cucina si riaprirà automaticamente alle 06:00
+- Pulsanti: Annulla / Sì, chiudi cucina
 
-- **URL pubblico:** https://grecospizzeria-47768.web.app
-- **Sviluppatrice:** Hacman Viorica Gabriela
-- **Deploy:** Firebase Hosting
+**Riapertura automatica alle 06:00**
+Alla chiusura viene salvato in Firestore il campo `riaperturaAuto` con il timestamp del giorno successivo alle 06:00. Qualsiasi client che carica l'app dopo quell'orario triggera automaticamente `setSerata(true)` — nessuna Firebase Function o piano Blaze necessario. Il campo viene azzerato alla riapertura.
 
----
-
-## Novità
-
-### Autocomplete asporto con prezzi automatici
-
-**Admin - Asporto:**
-- Quando si aggiunge un nuovo ordine asporto, digitando nel campo nome appare un dropdown con i prodotti del menu che contengono quella parte di nome
-- Cliccando su un prodotto dal dropdown:
-  - Il nome viene inserito automaticamente
-  - Il prezzo viene inserito automaticamente dal listino
-- Se non viene trovata nessuna corrispondenza, è possibile inserire nome e prezzo manualmente
-
-**Categorie cercate:**
-- Sezione **Pizze** → cerca in: pizze rosse, pizze bianche, fuori menu
-- Sezione **Fritti** → cerca in: antipasti, focacce/calzoni, fuori menu
-- Sezione **Altro** → cerca in: dolci, bevande, fuori menu
-
-Il dropdown mostra massimo 8 risultati per evitare sovraffollamento.
+**Nomi piatti in maiuscolo**
+`text-transform: uppercase` applicato uniformemente a tutti i contesti che ne erano privi:
+card fuori menu, pagina Speciali, popup dettaglio fuori menu, bottom-sheet piatto normale.
+Funziona automaticamente per i piatti inseriti in futuro.
 
 ---
 
-## Note di deploy
+### Fix
 
-1. Nessuna modifica al database necessaria
-2. Compatibile con versione precedente
-3. Nessuna migrazione dati
+**Sovrapposizione testo su iOS Safari (form asporto)**
+I campi input del modal asporto mostravano il testo sovrapposto su iOS.
+Causa: mancanza di `line-height` esplicita; iOS usava un valore interno anomalo.
+Fix: `line-height: 1.4`, `-webkit-appearance: none`, `width: 100%`, `box-sizing: border-box`.
+
+---
+
+### Sicurezza
+
+**Firestore Security Rules — produzione**
+Sostituite le regole aperte di sviluppo con regole per-collezione:
+
+| Collezione | Lettura | Scrittura |
+|---|---|---|
+| Menu (antipasti, pizze, ecc.) | Pubblica | Solo admin autenticato |
+| Config, chiusure | Pubblica | Solo admin autenticato |
+| Prenotazioni, ordini asporto | Pubblica (solo create) | Solo admin autenticato |
+| Storica serate | Solo admin | Solo admin |
+
+Deploy: `firebase deploy --only firestore:rules`
+
+Le regole sono valutate server-side — nessun client può aggirarle indipendentemente dal frontend Angular.

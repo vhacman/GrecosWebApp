@@ -1,76 +1,39 @@
-# Grecos Pizzeria — Menu Digitale
-## Release Note · v1.3.0 · 09-03-2026
+# Release v1.3.0 — 10-03-2026
+
+## Specialità, QR dedicati e Manuale utente
 
 ---
 
-## Panoramica
+### Menu pubblico
 
-Release che introduce la gestione delle **prenotazioni chiuse** (locale pieno) e **asporto chiuso** (cucina piena),
-permettendo di bloccare nuovi ordini/prenotazioni per qualsiasi giorno della settimana direttamente dall'admin.
-Include anche il PDF per gli ordini da asporto.
+**Tab Specialità**
+Nuova prima tab ⭐ nella navbar del menu pubblico. Mostra tutti i fuori menu attivi raggruppati per categoria, con card cliccabili, popup dettaglio, allergeni, supporto IT/EN. Sempre visibile anche a cucina chiusa. Stato vuoto se nessun fuori menu attivo.
 
-- **URL pubblico:** https://grecospizzeria-47768.web.app
-- **Sviluppatrice:** Hacman Viorica Gabriela
-- **Deploy:** Firebase Hosting
+**Link diretto per categoria**
+La route `/menu` supporta `?cat=dolci`, `?cat=pizzeRosse`, ecc. per aprire direttamente la categoria desiderata. Utile per QR stampati per sezione del locale.
 
 ---
 
-## Novità
+### QR Code
 
-### Chiusura prenotazioni (locale pieno)
+**QR con logo**
+Il QR generato da `Strumenti → QR Code` usa `HomepageQR.png` (logo Grecos al centro) invece della generazione dinamica. Download PNG e PDF aggiornati.
 
-**Admin - Prenotazioni:**
-- Nuovo toggle nell'header: **"CHIUDI PRENOTAZIONI"** (rosso) / **"APRI PRENOTAZIONI"** (verde)
-- Funziona per qualsiasi giorno della settimana, non solo i giorni di apertura
-- Il toggle è attivo (verde) quando le prenotazioni sono chiuse per il giorno selezionato
-- Dati salvati in Firestore nella nuova collezione `prenotazioniChiuse`
+**QR dedicato Dolci**
+Generato `grecos-qr-dolci.pdf` (A4, stile Grecos) con QR puntato a `/menu?cat=dolci`. Da stampare e posizionare vicino al porta-dolci.
 
-**Homepage:**
-- Se oggi ha prenotazioni chiuse: banner "Prenotazioni chiuse — Il locale è pieno per questa sera. Prova a prenotare per un giorno successivo!"
-- Se c'è un giorno futuro con prenotazioni chiuse: mostra il giorno specifico (es. "Prenotazioni chiuse per Venerdì")
-- Priorità sul "messaggio del giorno" e sulle chiusure programmate
-
-### Chiusura asporto (cucina piena)
-
-**Admin - Asporto:**
-- Nuovo toggle nell'header: **"CHIUDI ASPORTO"** (arancione) / **"APRI ASPORTO"** (verde)
-- Funziona per qualsiasi giorno della settimana
-- Dati salvati in Firestore nella nuova collezione `asportoChiuso`
-
-**Homepage:**
-- Messaggio visualizzato solo se il cliente chiama per prenotare (il banner non è ancora implementato in homepage per asporto - visualizzato solo nell'admin)
-
-### PDF Asporto
-
-**Admin - Asporto:**
-- Nuovo bottone PDF nell'header (icona 📄)
-- Genera PDF con:
-  - Intestazione Grecos + data
-  - KPI: numero ordini, totale pizze, totale fritti, incasso totale
-  - Tabella: orario, nome cliente, pizze, fritti, note
-  - Sfondo alternato per righe
+**Condivisione QR dai clienti**
+Nel popup "Condividi" della homepage: bottone QR Code che usa la Web Share API per condividere `HomepageQR.png` nativamente (WhatsApp, AirDrop, ecc.). Fallback download automatico su browser non supportati.
 
 ---
 
-## Modifiche tecniche
+### Homepage
 
-### Firestore
+**Popup Condividi ridisegnato**
+Sostituito il modal con gradienti/emoji con un bottom sheet pulito: righe con icona colorata e label.
 
-Nuove collezioni:
-- `prenotazioniChiuse`: documenti con campo `data` (YYYY-MM-DD)
-- `asportoChiuso`: documenti con campo `data` (YYYY-MM-DD)
+**Bottone Manuale d'Uso**
+Nuovo bottone sotto "Scarica App" per scaricare `manuale-utente.pdf` servito dalla root Firebase Hosting.
 
-### File modificati
-
-- `src/app/services/config.ts`: aggiunte interfacce `PrenotazioneChiusa`, `AsportoChiuso` e metodi CRUD
-- `src/app/admin/prenotazioni/prenotazioni.ts/html/css`: toggle e logica
-- `src/app/admin/asporto/asporto.ts/html/css`: toggle, PDF e logica
-- `src/app/public/home/home.ts/html`: visualizzazione messaggi
-
----
-
-## Note di deploy
-
-1. Le nuove collezioni Firestore (`prenotazioniChiuse`, `asportoChiuso`) vengono create automaticamente al primo utilizzo
-2. Nessuna migrazione dati necessaria
-3. Compatibile con versione precedente (funzionalità aggiuntive, non breaking)
+**LinkedIn nel footer**
+Icona LinkedIn affiancata al copyright.
