@@ -5,6 +5,30 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v1.6.0] — 14-03-2026
+
+### Novità
+
+- **Predeploy build automatico**
+  Aggiunto hook `predeploy: ["npm run build"]` in `firebase.json`: ogni `firebase deploy` compila automaticamente il progetto prima di pubblicarlo. Elimina il problema di deployare accidentalmente una build vecchia.
+
+- **Cache headers Firebase Hosting**
+  Configurati header `Cache-Control` per-file in `firebase.json`:
+  - `ngsw-worker.js`, `ngsw.json`, `index.html` → `no-cache, no-store, must-revalidate`: il browser verifica sempre se c'è una nuova versione
+  - `*.js`, `*.css`, font → `public, max-age=31536000, immutable`: i bundle hashati sono cacheati per un anno
+
+  Risolve il problema per cui gli utenti vedevano la versione vecchia dopo un deploy senza svuotare la cache.
+
+- **Filtro localhost in Microsoft Clarity**
+  Clarity non si inizializza più su `localhost` né su indirizzi `192.168.*`: le sessioni di sviluppo non inquinano più le statistiche di produzione.
+
+### Fix
+
+- **Bottone "Invia su WhatsApp" nell'anteprima prenotazioni senza stile**
+  La classe `.wa-btn` mancava da `prenotazioni-modal.css`. Aggiunta con stile verde WhatsApp (`#25D366`), larghezza piena e stesso layout del `salva-btn`.
+
+---
+
 ## [v1.5.0] — 14-03-2026
 
 ### Novità
