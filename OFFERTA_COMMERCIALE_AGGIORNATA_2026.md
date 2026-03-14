@@ -110,7 +110,6 @@ L'abbonamento include tutto: hosting, manutenzione, supporto, aggiornamenti. **N
 3. **QR Code**: Ricevi il QR Code personalizzato, pronto da stampare o esporre
 4. **Launch**: I tuoi clienti scansionano e navigano subito — il tuo locale è digitalizzato
 
-**Tempo di attivazione: 2–5 giorni lavorativi**
 
 ---
 
