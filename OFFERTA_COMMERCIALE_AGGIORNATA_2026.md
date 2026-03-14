@@ -17,7 +17,7 @@ Il mercato lo dice chiaro: solo il **14,6% dei ristoranti italiani** ha adottato
 - **Menu sempre aggiornato**: Modifica prezzi e disponibilità in tempo reale dal pannello admin
 - **Niente più stampe**: Elimina i costi di ristampa — risparmio medio €40–80/mese
 - **QR Code immediato**: I clienti scansionano e navigano dal proprio smartphone, senza app da scaricare
-- **Prenotazioni automatiche**: Gestione tavoli con calendario, conferma via WhatsApp
+- **Prenotazioni **: Gestione tavoli con calendario, condivisione degli admin via WhatsApp
 - **Ordini asporto online**: Ricevi ordini direttamente, con gestione stato e storico
 - **Analytics integrati**: Statistiche visite, piatti più visti, fasce orarie di punta
 - **PWA installabile**: I clienti possono "installare" il menu come un'app sul telefono
