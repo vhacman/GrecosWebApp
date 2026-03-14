@@ -74,3 +74,9 @@ firebase deploy
 ## Configurazione
 
 Il file `serviceAccountKey.json` contiene le credenziali Firebase (non committare). Le variabili di ambiente sono gestite tramite Firebase Console.
+
+## Documentazione Aggiuntiva
+
+- **[OFFERTA COMMERCIALE](./OFFERTA_COMMERCIALE_AGGIORNATA_2026.md)**: Documento commerciale con dettagli sui servizi, prezzi e condizioni
+- **[Changelog](./CHANGELOG.md)**: Cronologia delle versioni e modifiche
+- **[Release Notes](./Releases)**: Note dettagliate per ogni release
