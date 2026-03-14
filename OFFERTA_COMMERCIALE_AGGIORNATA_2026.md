@@ -18,7 +18,7 @@ Il mercato lo dice chiaro: solo il **14,6% dei ristoranti italiani** ha adottato
 - **Niente più stampe**: Elimina i costi di ristampa — risparmio medio €40–80/mese
 - **QR Code immediato**: I clienti scansionano e navigano dal proprio smartphone, senza app da scaricare
 - **Prenotazioni **: Gestione tavoli con calendario, condivisione degli admin via WhatsApp
-- **Ordini asporto online**: Ricevi ordini direttamente, con gestione stato e storico
+- **Ordini asporto **: insermento ordini manuae con gestione stato e storico
 - **Analytics integrati**: Statistiche visite, piatti più visti, fasce orarie di punta
 - **PWA installabile**: I clienti possono "installare" il menu come un'app sul telefono
 - **Supporto umano diretto**: Parli con la sviluppatrice, non con un helpdesk anonimo
