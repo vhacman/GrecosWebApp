@@ -5,6 +5,118 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v1.5.0] — 14-03-2026
+
+### Novità
+
+- **Responsive Android & iOS — fix globali**
+  - `overflow-x: hidden` su `html` e `body`: elimina lo scroll orizzontale involontario su Chrome Android che causava uno zoom-out dell'intera pagina.
+  - `-webkit-text-size-adjust: 100%` e `text-size-adjust: 100%` su `body`: blocca il text boosting automatico di Chrome Android nei blocchi ristretti.
+  - `interactive-widget=resizes-content` nel viewport meta: quando la tastiera virtuale appare su Android il contenuto si ridimensiona correttamente, senza nascondere i campi di input sotto la tastiera.
+  - KPI bar (tavoli/persone/seggioloni) con `flex-wrap: wrap`: i dati vanno a capo invece di tagliarsi su schermi stretti.
+
+- **Header a due righe su mobile (Prenotazioni e Asporto)**
+  Su schermi ≤ 480px l'header si riorganizza su due righe tramite `flex-wrap: wrap` e `order`:
+  - Riga 1: freccia indietro + titolo sezione
+  - Riga 2: bottoni azioni (chiudi prenotazioni/asporto, PDF, calendario)
+  Nessuna sovrapposizione tra titolo e bottoni su qualsiasi dispositivo.
+
+- **Barra azioni sticky in Prenotazioni**
+  Tre bottoni sempre visibili in una barra `position: sticky` subito sotto l'header:
+  - **Aggiungi** — apre il form nuova prenotazione
+  - **Non pren.** — apre il modal dei tavoli walk-in (con badge numerico se ci sono tavoli)
+  - **WhatsApp** — genera e condivide l'immagine riepilogativa (visibile solo se ci sono dati)
+  Design a pill con sfondo tenue e bordo sottile (`border-radius: 2rem`, `border: 1.5px solid`).
+
+- **Modal "Non prenotati" (walk-in)**
+  I tavoli senza prenotazione sono stati spostati dal fondo pagina a un bottom-sheet dedicato,
+  accessibile dalla barra azioni. Nuova collezione Firestore `nonPrenotati` con interfaccia
+  `NonPrenotato { id?, data, persone, createdAt }`. Badge numerico sul bottone mostra il conteggio.
+
+- **Modifica prenotazione inline**
+  Aggiunto `updatePrenotazione()` nel ConfigService: ora è possibile modificare una prenotazione
+  esistente (nome, telefono, zona, persone, seggioloni, orario, note) senza eliminarla e ricrearla.
+
+- **Notifica real-time nuove prenotazioni**
+  Toast in-app che appare automaticamente quando un'altra sessione aggiunge una prenotazione
+  per il giorno visualizzato (rilevato tramite `createdAt.seconds > initTime`).
+  Si chiude automaticamente dopo 5 secondi o al tap.
+
+- **Condivisione WhatsApp con immagine (Prenotazioni)**
+  Il bottone WhatsApp genera un PNG del riepilogo della giornata (`png-prenotazioni.ts`)
+  e lo condivide via Web Share API con caption automatica. Anteprima immagine nel modal
+  prima dell'invio. Fallback download su browser non supportati.
+
+- **PDF Prenotazioni — Mese e Anno**
+  Dropdown PDF con tre opzioni:
+  - **Giornata** — riepilogo giornaliero (già presente)
+  - **Mese intero** — tutte le prenotazioni del mese raggruppate per giorno (`pdf-prenotazioni-mese.ts`)
+  - **Anno intero** — tutte le prenotazioni dell'anno raggruppate per mese (`pdf-prenotazioni-anno.ts`)
+  Aggiunto `generaPdfGiornataBlob()` in `pdf-prenotazioni.ts` per restituire Blob (necessario per l'anteprima WhatsApp).
+
+- **Swipe to dismiss su tutti i modal**
+  Tutti i modal (nuova prenotazione, non prenotati, ordine asporto) si chiudono trascinando
+  verso il basso. Implementato con factory `makeSwipeHandler(closeFn)` che registra manualmente
+  il listener `touchmove` con `{ passive: false }` per chiamare `preventDefault()` e prevenire
+  il pull-to-refresh del browser — comportamento impossibile con i listener Angular (passivi per default).
+
+- **Asporto — Bottone "Aggiungi ordine" nel contenuto**
+  Sostituito il `+` nell'header con un bottone esplicito nel corpo della pagina, più accessibile.
+
+- **Asporto — Orario libero**
+  Toggle "Orario libero" nel form ordine: permette di inserire un orario personalizzato
+  tramite `<input type="time">`, identico al comportamento già presente in Prenotazioni.
+
+- **Asporto — Sezione "Altro" tipizzabile**
+  La sezione Altro (dolci, bevande, ecc.) ora funziona come Pizze e Fritti:
+  bottone per aggiungere voci con autocomplete e modifica inline.
+
+- **Asporto — Autocomplete migliorato**
+  - Filtro cambiato da `.includes()` a `.startsWith()`: eliminati suggerimenti non pertinenti
+    (es. "Rossa e olive" appariva cercando "M" perché conteneva la "m" nel nome).
+  - Dropdown sempre visibile su Android: `min-width: 200px`, `max-width: calc(100vw - 3rem)`, `right: auto`.
+
+- **Asporto — Layout item a due righe su mobile**
+  Su schermi ≤ 480px la riga di ogni articolo si divide:
+  - Riga 1: nome del piatto (larghezza intera)
+  - Riga 2: quantità + prezzo + rimuovi
+
+- **PDF Asporto — Mese e Anno**
+  Dropdown PDF con tre opzioni (come Prenotazioni):
+  - **Giornata** — riepilogo ordini con KPI (già presente)
+  - **Mese intero** — ordini per giorno (`pdf-asporto-mese.ts`)
+  - **Anno intero** — ordini per mese e giorno (`pdf-asporto-anno.ts`)
+
+- **Calendario dal 1° gennaio 2026**
+  `generaGiorniAperti()` estesa con parametro opzionale `dal?: string` (YYYY-MM-DD).
+  Prenotazioni e Asporto passano `'2026-01-01'` per includere l'intero storico dell'anno.
+  All'apertura, la sidebar si posiziona automaticamente sulla settimana selezionata
+  usando `afterNextRender` + `scrollTop` calcolato manualmente (non `scrollIntoView`,
+  che spostava anche il contenuto principale della pagina).
+
+### Sicurezza
+
+- **Firestore Security Rules — completamento**
+  Aggiunte regole per le nuove collezioni introdotte in questa release:
+
+  | Collezione | Lettura | Scrittura |
+  |---|---|---|
+  | `nonPrenotati` | Solo admin | Solo admin |
+  | `prenotazioniChiuse` | Solo admin | Solo admin |
+  | `asporto` | Solo admin | Solo admin |
+  | `asportoChiuso` | Solo admin | Solo admin |
+  | `storici` | Solo admin | Solo admin |
+  | `statistiche` | Solo admin | Pubblica (visitatori anonimi) |
+
+### Fix
+
+- **Swipe modal attivava il pull-to-refresh** — listener `touchmove` Angular è passivo per default, `preventDefault()` veniva ignorato. Risolto registrando il listener manualmente con `{ passive: false }`.
+- **Testo "Non prenotati" sforava su Android** — abbreviato in "Non pren." per adattarsi agli schermi più stretti.
+- **Bottone WhatsApp tagliato a destra su Android** — aggiunto `min-width: 0` ai bottoni `flex: 1` per cedere spazio al bottone WA senza spingerlo fuori dal viewport.
+- **`scrollIntoView` spostava tutta la pagina** — sostituito con calcolo manuale `nav.scrollTop` che scorre solo la sidebar.
+
+---
+
 ## [v1.4.0] — 13-03-2026
 
 ### Novità
