@@ -39,7 +39,6 @@ Il mercato lo dice chiaro: solo il **14,6% dei ristoranti italiani** ha adottato
 - Aggiungi, modifica, elimina piatti e categorie
 - Gestione prezzi e disponibilità in tempo reale
 - Calendario prenotazioni con note e conferma WhatsApp
-- Gestione ordini asporto con stati (ricevuto / in preparazione / pronto)
 - Esportazione PDF (giornaliero / mensile / annuale)
 - Statistiche visite e analytics integrati (Microsoft Clarity)
 - Notifiche in-app per nuove prenotazioni
@@ -47,7 +46,6 @@ Il mercato lo dice chiaro: solo il **14,6% dei ristoranti italiani** ha adottato
 ### Servizi Inclusi in Ogni Piano
 - Setup e configurazione personalizzata completa
 - Hosting Firebase (veloce, sicuro, scalabile)
-- Certificato SSL incluso
 - Backup automatici giornalieri
 - QR Code personalizzato con logo del locale
 - Formazione base per lo staff (2–3 ore)
