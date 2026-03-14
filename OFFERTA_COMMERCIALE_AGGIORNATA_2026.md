@@ -115,7 +115,7 @@ L'abbonamento include tutto: hosting, manutenzione, supporto, aggiornamenti. **N
 
 ## Contatti
 
-Per informazioni, demo gratuita o preventivo personalizzato:
+Per informazioni o preventivo personalizzato:
 
 - **Email**: hacmanvioricagabriela@gmail.com
 - **Telefono / WhatsApp**: +39 327 814 9801
