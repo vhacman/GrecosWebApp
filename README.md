@@ -1,82 +1,85 @@
-# GrecosMenu - Applicazione Principale
+# Grecos Pizzeria — Menu Digitale
 
-## 1. Panoramica dell'Applicazione
+Web app per la gestione del menu digitale, prenotazioni tavoli e ordini asporto di **Grecos Pizzeria**.
 
-### Sviluppatore
-- **Nome**: Hacman Viorica Gabriela
-- **Profilo**: Junior Software Engineer
-- **Formazione**:
-  - Generation Italy (500h Java Developer, dic 2025 - apr 2026)
-  - 42 Roma Luiss (C, C++, System Administration, Linux)
-- **Esperienza precedente**: Capo Sala presso Grecos Pizzeria (2022-2025)
-- **Tecnologie**: Angular 21, TypeScript 5.9, Firebase, Bootstrap 5.3, Java, SpringBoot
+---
 
-### Caratteristiche Principali
-- **Menu digitale QR Code**: Consultabile via smartphone tramite QR code
-- **Pannello Admin completo**: Gestione menu, prezzi, categorie, allergeni
-- **Sistema prenotazioni**: Gestione tavoli con calendario, note, conferma WhatsApp
-- **Gestione ordini asporto**: Ordini da asporto con stato e gestione
-- **Statistiche visite**: Analytics integrato con Microsoft Clarity
-- **Modalità Estate/Inverno**: Gestione stagionale del menu
-- **Esportazione PDF**: Prenotazioni, asporto, storico mensile/annuale
-- **PWA installabile**: Installazione su mobile come app nativa
-- **Notifiche real-time**: Toast in-app per nuove prenotazioni
-- **Integrazione WhatsApp**: Condivisione riepiloghi giornalieri
+## Stack
 
-### Stack Tecnologico
-- **Frontend**: Angular 17-21+ (TypeScript 5.9)
-- **Backend**: Firebase (Firestore, Authentication, Hosting)
-- **PWA**: Service Worker con offline support
-- **Design**: Bootstrap 5.3 / Material Design
-- **Analytics**: Microsoft Clarity
+| Layer | Tecnologia |
+|-------|-----------|
+| Frontend | Angular 21 — standalone components, signals, `toSignal()` |
+| UI | Bootstrap 5.3 + Bootstrap Icons 1.13 |
+| Form/Dialog | Angular Material 21 |
+| Database | Firebase Firestore (europe-west1) |
+| Auth | Firebase Authentication (email/password) |
+| Hosting | Firebase Hosting |
+| Linguaggio | TypeScript 5.9 strict mode |
 
-### Volume di Codice
-- Oltre **50 componenti Angular**
-- Amministrazione completa (dashboard, prenotazioni, asporto, menu, impostazioni)
-- Backend Firestore con struttura dati completa
+---
 
-## Struttura Cartelle
+## Struttura del repository
 
 ```
-GrecosMenu/
-├── src/                    # Codice sorgente Angular
-│   ├── app/               # Componenti, servizi, modelli
-│   ├── styles.css         # Stili globali
-│   └── index.html         # Entry point
-├── public/                # File statici (assets, QR)
-├── dist/                  # Build di produzione
-├── scripts/               # Script di automazione
-├── .firebase/            # Configurazione hosting
-├── firebase.json         # Configurazione Firebase
-├── firestore.rules       # Regole database
-├── package.json           # Dipendenze npm
-└── angular.json          # Configurazione Angular
+GrecosMenu/                     ← root Git
+├── GrecosMenu/                 ← progetto Angular (cd qui per tutti i comandi)
+│   ├── src/app/
+│   │   ├── InterfacceECostanti/   interfacce, costanti, allergeni, releases
+│   │   ├── services/              auth, menu, config, statistiche
+│   │   ├── core/                  guards, models, pipes, utils, i18n, env
+│   │   ├── public/                home, navbar, menu pubblico, fuori menu
+│   │   └── admin/                 login + dashboard (asporto, prenotazioni,
+│   │                              disponibilità, impostazioni, chiusure,
+│   │                              calcolo cassa, statistiche, storico)
+│   └── firebase.json / .firebaserc
+├── Documentazione/
+│   └── CHANGELOG.md
+└── README.md
 ```
 
-## Funzionalità Principali
+---
 
-- Menu digitale consultabile via QR code
-- Pannello admin per gestione menu
-- Sistema prenotazioni tavoli
-- Gestione ordini asporto
-- Statistiche visite
-- Modalità estate/inverno
-- Esportazione PDF (prenotazioni, asporto, storico)
+## Comandi
 
-## Deploy
+Tutti i comandi vanno eseguiti da `GrecosMenu/GrecosMenu/`:
 
 ```bash
-cd GrecosMenu
-npm run build
-firebase deploy
+npm start          # dev server → http://localhost:4200
+ng build           # build produzione → dist/GrecosMenu/browser/
+ng test            # test con Vitest
+firebase deploy    # build + deploy su Firebase Hosting + Firestore rules
 ```
 
-## Configurazione
+---
 
-Il file `serviceAccountKey.json` contiene le credenziali Firebase (non committare). Le variabili di ambiente sono gestite tramite Firebase Console.
+## Colori brand
 
-## Documentazione Aggiuntiva
+| Nome | HEX |
+|------|-----|
+| Rosso | `#C1272D` |
+| Oro | `#F4A800` |
+| Scuro | `#1C1008` |
+| Sfondo | `#FAFAF7` |
 
-- **[OFFERTA COMMERCIALE](./OFFERTA_COMMERCIALE_AGGIORNATA_2026.md)**: Documento commerciale con dettagli sui servizi, prezzi e condizioni
-- **[Changelog](./CHANGELOG.md)**: Cronologia delle versioni e modifiche
-- **[Release Notes](./Releases)**: Note dettagliate per ogni release
+---
+
+## Versione corrente
+
+**v1.9.0** — vedi [`Documentazione/CHANGELOG.md`](Documentazione/CHANGELOG.md) per lo storico completo.
+
+Il popup "Novità" per gli admin è gestito da `src/app/InterfacceECostanti/constants/releases.constants.ts`.
+Le versioni segnate come *interno* nel CHANGELOG non aggiornano `CURRENT_VERSION` e non generano popup.
+
+---
+
+## Firebase
+
+- **Firestore collections:** `antipasti`, `pizzeRosse`, `pizzeBianche`, `focacceCalzoni`, `dolci`, `bevande`, `fuoriMenu`, `ingredienti`, `config`, `chiusure`, `prenotazioni`, `ordiniAsporto`, `nonPrenotati`, `storicaSerate`
+- **Cache strategy:** `memoryLocalCache()` — no IndexedDB (evita corruzioni)
+- **Security rules:** regole per-collezione in produzione (admin-only per scrittura)
+
+---
+
+## Autrice
+
+Hacman Viorica Gabriela — [@grecos11](https://www.instagram.com/grecos11) — 2026
