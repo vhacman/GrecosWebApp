@@ -5,6 +5,201 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v1.9.0] — 18-03-2026
+
+### Novità
+
+- **QR Recensioni Google e TripAdvisor**
+  Sezione Strumenti ridisegnata con modal multi-tipo: QR per menu, dolci, Google Reviews e
+  TripAdvisor (generato dinamicamente via libreria `qrcode`). Ogni QR scaricabile come PNG.
+
+- **Impostazioni → Contatti — campi link recensioni**
+  Nuovi campi URL per Google Reviews e TripAdvisor, ciascuno con bottone "Condividi"
+  (Web Share API su mobile, fallback clipboard su desktop).
+
+- **Homepage — sezione "Lascia una recensione"**
+  Card con link diretto a Google Reviews e TripAdvisor, visibile solo se i link sono configurati.
+
+- **Card menu unificata con chip categorie**
+  Sostituisce bottone menu + card separata con un unico blocco: header rosso CTA +
+  chip per ogni categoria che linkano direttamente a `/menu?cat=<categoria>`.
+  Accesso immediato a qualsiasi sezione del menu senza passare dalla homepage.
+
+- **Bottone "Manuale d'Uso" meno prominente**
+  Stile aggiornato a testo grigio senza bordo per non competere con le CTA principali.
+
+### Ottimizzazione
+
+- **IntersectionObserver sulla barra bottom homepage**
+  Sostituisce `HostListener('scroll')` con IntersectionObserver per rilevare quando l'hero
+  è fuori dal viewport. Nessun overhead sul thread principale durante lo scroll.
+
+---
+
+## [v1.8.5] — 17-03-2026
+
+### Fix
+
+- **Disponibilità (antipasti, dolci, bevande) — Lista vuota per indice Firestore mancante**
+  Le pagine disponibilità mostravano la lista completamente vuota in produzione.
+  Causa: `getCategoria()`, `getCategoriaAdmin()`, `getFuoriMenuByCategoria()`, `getFuoriMenu()` e
+  `getFuoriMenuAdmin()` in `menu.ts` usavano `where(...) + orderBy('ordine')` su campi diversi.
+  Firestore richiede un indice composito per questa combinazione — assente nel progetto.
+  Fix: rimosso `orderBy('ordine')` da tutte le query con `where`, ordinamento spostato lato client
+  con `Array.sort((a, b) => (a.ordine ?? 0) - (b.ordine ?? 0))`.
+  Lo stesso approccio era già stato adottato per `getPrenotazioni()` in v1.8.4.
+
+---
+
+## [v1.8.4] — 17-03-2026
+
+### Fix
+
+- **Prenotazioni — Fix critico pulsanti modal**
+  Tutti i pulsanti della pagina prenotazioni (Aggiungi, Non prenotati, Chiudi prenotazioni, Calendario,
+  modifica/elimina/arrivata su ogni riga) non aprivano i relativi modal in produzione.
+  Causa: `Prenotazioni` usava `ViewEncapsulation.Emulated` (default Angular), che aggiunge attributi
+  `[_ngcontent-ng-cXXXX]` ai selettori CSS. I componenti modal figli usano `ViewEncapsulation.None`
+  e non ricevono questi attributi — quindi `.overlay { position: fixed }` e `.modal-bottom { position: fixed }`
+  in `prenotazioni.css` non venivano mai applicati.
+  Fix: aggiunto `encapsulation: ViewEncapsulation.None` a `Prenotazioni` — CSS ora globale, raggiunge i figli.
+
+- **Prenotazioni — Query Firestore senza indice composito**
+  `getPrenotazioni()` usava `orderBy('orario')` in combinazione con `where('data', '==', ...)`.
+  Firestore richiede un indice composito per query con `where` + `orderBy` su campi diversi.
+  Fix: rimosso `orderBy` dalla query, ordinamento spostato lato client con `Array.sort()`.
+
+- **Prenotazioni — Errori Firestore visibili nel form**
+  Il metodo `salva()` in `pren-modal-prenotazione` non gestiva gli errori Firestore.
+  Aggiunto `try/catch` + signal `errore` che mostra il messaggio direttamente nel form.
+
+- **Pagina Manutenzione**
+  Nuovo componente `/admin/manutenzione` + `maintenanceGuard` sulle route admin.
+  Toggle in Impostazioni → Manutenzione per attivare/disattivare la modalità.
+  Gli admin con bypass `man_bypass` in sessionStorage accedono sempre.
+
+- **Storico Serate — Path CSS corretto**
+  `storico-serate.ts` puntava a `./storico-serate.css` (rimosso). Corretto in `./css/storico-serate.css`.
+
+---
+
+## [v1.8.3] — 16-03-2026 *(interno — non pubblicato)*
+
+### Documentazione / Refactoring
+
+- **Commenti inline su tutti i componenti Angular**
+  Aggiunti commenti `//` e blocchi `/* */` su tutti i file `.ts` e `<!-- -->` su tutti i file `.html`
+  della cartella `src/app/` (esclusi i `.spec.ts`). Coprono app root, guards, models, pipes, utils,
+  servizi, i18n, componenti pubblici (home, menu, fuori menu, filtri, categorie) e l'intero pannello
+  admin (login, dashboard, gestione menu, asporto, prenotazioni, disponibilità, impostazioni, chiusure,
+  resoconto, calcolo cassa, statistiche, storico serate). Nessuna modifica alla logica applicativa.
+
+- **Fix `styleUrl` prenotazioni**
+  `prenotazioni.ts` puntava a `./css/prenotazioni.css` (file rimosso in v1.8.1). Corretto in `./prenotazioni.css`.
+
+> ℹ️ Questa versione non è presente in `releases.constants.ts` — nessun popup novità per gli admin.
+
+---
+
+## [v1.8.2] — 16-03-2026
+
+### Fix
+
+- **Disponibilità — Soglia "Scarso" corretta a ≤ 5**
+  La soglia `SOGLIA_SCARSO` era stata impostata a `10` in v1.8.1, rendendo "Scarso" troppo ampio (1–9).
+  Corretta a `6`: ora `1–5 → Scarso`, `≥ 6 → OK`.
+  Applicato a `disponibilita-antipasti.ts`, `disponibilita-bevande.ts`, `disponibilita-dolci.ts`.
+
+---
+
+## [v1.8.1] — 16-03-2026
+
+### Novità
+
+- **Asporto — Sconto per ordine**
+  Tap sulla riga di un ordine apre un bottom-sheet "Sconto ordine": mostra il totale lordo e
+  un campo "Totale da incassare". Lo sconto viene calcolato automaticamente (lordo − da incassare)
+  e salvato in Firestore (`sconto` in `OrdineAsporto`). Il totale barrato è visibile nella lista.
+  Possibilità di rimuovere lo sconto con bottone dedicato. Il KPI "Totale incasso" della giornata
+  tiene conto di tutti gli sconti applicati.
+
+- **Asporto — Toggle "Consegnato"**
+  Ogni riga ordine mostra un pulsante cerchio/spunta a sinistra. Tap segna/desegna l'ordine
+  come consegnato — stato persistito in Firestore (`consegnato` in `OrdineAsporto`).
+  Le righe consegnate hanno uno stile visivo distinto.
+
+- **Calcolo Cassa — Contanti calcolati automaticamente**
+  Il campo "Soldi incassati in contanti" è stato sostituito con "Totale scontrino di chiusura cassa".
+  I contanti vengono calcolati automaticamente come `scontrino − POS` e mostrati in tempo reale.
+  Semplifica l'inserimento: basta digitare il totale dello scontrino fiscale e l'importo POS.
+  PDF e Firestore aggiornati con la nuova nomenclatura e il campo `totaleInCassa`.
+
+- **Disponibilità — Soglia "Scarso" portata a 10**
+  Il badge "Poca disponibilità" nel menu pubblico ora compare solo se `disponibili < 10`
+  (prima compariva per qualsiasi quantità > 0). Applicato a antipasti, bevande, dolci.
+  Nel resoconto disponibilità, quantità ≥ 10 mostra badge "OK" invece di "Scarso".
+  `disponibiliFromStato('ok')` ora restituisce 10 di default così l'admin può subito
+  affinare la quantità esatta senza dover ridigitare da zero.
+
+### Refactoring
+
+- **CSS suddivisi in sottocartelle**
+  I file CSS monolitici di `statistiche` e `storico-serate` sono stati spostati in sottocartelle
+  `css/` (stessa struttura già adottata da `asporto`). `asporto-list.css` e `asporto-modal.css`
+  spostati anch'essi in `css/`. Nessuna modifica visiva — solo organizzazione del codice.
+
+---
+
+## [v1.8.0] — 15-03-2026
+
+### Novità
+
+- **Layout desktop e tablet completamente responsivo**
+  Rimosso l'effetto "telefono nel browser" (bordo arrotondato + sfondo marrone + max-width 900px)
+  che rendeva il sito goffo su PC. Il contenuto ora occupa l'intero schermo.
+  Homepage su desktop (≥ 1024px): layout a due colonne CSS Grid — brand e info a sinistra,
+  CTA e menu a destra. Su tablet (≥ 768px) padding ottimizzati, logo più grande, font più ampi.
+
+- **Card "Visualizza Menù e Prezzi" nella dashboard admin**
+  Aggiunta come primo elemento della dashboard (prima del toggle cucina), con stile bianco e
+  bordo rosso. Permette all'admin di aprire il menu pubblico direttamente dalla dashboard
+  per compilare il preconto. Sottotitolo: "Consulta il menù per compilare il preconto".
+
+- **Calcolo Cassa protetto da password**
+  Il link "Calcolo Cassa" nella dashboard è ora protetto: al click appare un bottom-sheet che
+  chiede la password prima di navigare. La password predefinita è `grecos2026`.
+  Archiviata come hash SHA-256 in Firestore (`config/cassa → passwordHash`) — mai in chiaro.
+  Al primo accesso (documento non ancora presente), il sistema confronta contro l'hash del
+  default senza richiedere setup iniziale.
+
+- **Cambio password Calcolo Cassa da Impostazioni**
+  Nuova sottosezione `🔒 Password Calcolo Cassa` in `Impostazioni`. Richiede la vecchia
+  password (verificata lato client tramite hash), la nuova (minimo 6 caratteri) e la conferma.
+  La nuova password viene hashata (SHA-256) prima di essere salvata in Firestore.
+
+- **Rimozione "Visualizza Menù" e "Calcolo Cassa" dalla sezione Strumenti**
+  Entrambe le voci sono state rimosse da Strumenti: il menu è raggiungibile dalla card
+  in dashboard, il Calcolo Cassa dal pannello principale con protezione password.
+
+### Fix
+
+- **Barra flottante homepage non centrata su tablet** — `transform: translateX(-50%)` applicato
+  correttamente sulla barra sticky, con stato nascosto combinato `translateX(-50%) translateY(...)`.
+  Su desktop (≥ 1024px) la barra è nascosta del tutto (non necessaria col layout a due colonne).
+
+---
+
+## [v1.7.0] — 14-03-2026
+
+### Novità
+
+- **Popup chiusura prenotazioni/asporto con messaggi dinamici**
+  I popup mostrati in homepage quando le prenotazioni o l'asporto sono chiusi per la serata
+  ora leggono il testo dinamico dalla configurazione admin, invece di mostrare un messaggio
+  fisso. I messaggi rifletono in tempo reale le impostazioni della serata.
+
+---
+
 ## [v1.6.0] — 14-03-2026
 
 ### Novità
