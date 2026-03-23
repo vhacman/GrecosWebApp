@@ -5,6 +5,83 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v2.0.2] — 23-03-2026
+
+### Novità
+
+- **Modifica preconto salvato**
+  Dallo storico preconti (`/admin/preconti-storia`) ogni preconto espanso mostra ora
+  un bottone "Modifica" (bordo oro) accanto a "Elimina". Il tap naviga a
+  `/admin/preconto?id=<docId>`: il componente legge il query param in `ngOnInit`,
+  recupera il documento da Firestore con `getPrecontoById` e pre-popola il form
+  (numero tavolo, tutte le voci, eventuale sconto).
+  Un banner arancione "Stai modificando un preconto salvato" è visibile durante
+  tutta la sessione di modifica.
+  Al salvataggio viene chiamato `updatePreconto` invece di `addPreconto`:
+  data e ora originali sono preservate, lo stato di pagamento già segnato non viene
+  toccato. Dopo il salvataggio l'utente viene riportato automaticamente allo storico.
+  Il bottone "Azzera" in modalità modifica funge da "Annulla" e torna allo storico
+  senza salvare.
+
+---
+
+## [v2.0.1] — 20-03-2026
+
+### Fix
+
+- **Errore Firestore campo telefono vuoto nell'asporto**
+  Creare un ordine asporto senza inserire il numero di telefono causava un `FirebaseError:
+  Unsupported field value: undefined` e il salvataggio falliva silenziosamente.
+  Fix: il campo `telefono` viene omesso con spread condizionale se vuoto, invece di essere
+  passato come `undefined` a `addDoc`.
+
+---
+
+## [v2.0.0] — 20-03-2026
+
+### Novità
+
+- **Rubrica clienti**
+  Nuova sezione accessibile da Strumenti → Rubrica. Permette di salvare nome e telefono
+  dei clienti abituali. Autocomplete nel modal ordine asporto (con bottone "Salva in rubrica")
+  e nel form prenotazioni. Badge "In rubrica" se il cliente è già presente.
+
+- **Asporto — campo telefono**
+  Il modal ordine asporto include ora un campo telefono con autocomplete rubrica.
+  Selezionando un cliente dalla rubrica vengono precompilati sia nome che numero.
+
+- **Preconto — storico integrato, stampa e guida**
+  Il bottone "Storico" nell'header del preconto apre la pagina storico preconti direttamente
+  (rimosso dalla dashboard). Nuovo bottone stampa che invoca `window.print()` con CSS B&N
+  dedicato: solo le voci del preconto vengono stampate, tutto il resto è nascosto.
+  Bottone `@info` con 6 punti che spiegano il funzionamento del preconto.
+
+- **Storico preconti — bottone @info**
+  Popup informativo con 5 punti che spiega come leggere lo storico, la segnatura pagamento
+  e come usare il filtro data.
+
+- **Statistiche — KPI preconti e rubrica**
+  Nuova sezione KPI preconti: incasso totale, numero preconti, media per tavolo.
+  Breakdown contanti / POS / da segnare. Grafico incasso giornaliero a barre (colore oro).
+  KPI rubrica: conteggio clienti salvati.
+
+- **Strumenti — QR unificato**
+  Tutti i QR code (menu, dolci, Google Reviews, TripAdvisor) sono ora accessibili da
+  un unico bottone "QR Code" che apre un picker bottom-sheet. Interfaccia più pulita.
+
+- **Rubrica — bottone @info**
+  Popup con 4 punti che spiega come funziona la rubrica e dove viene usata.
+
+### Fix
+
+- **Tavolo prenotazione — cancellazione non funzionante**
+  Premendo X per rimuovere il numero tavolo da una prenotazione, il campo non veniva
+  eliminato da Firestore (Firestore ignora `undefined` in `updateDoc`).
+  Fix: nuovo metodo `cancelTavoloPren()` che usa `deleteField()` per rimuovere fisicamente
+  il campo dal documento Firestore.
+
+---
+
 ## [v1.9.0] — 18-03-2026
 
 ### Novità

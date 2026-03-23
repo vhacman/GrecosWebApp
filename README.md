@@ -65,7 +65,7 @@ firebase deploy    # build + deploy su Firebase Hosting + Firestore rules
 
 ## Versione corrente
 
-**v1.9.0** — vedi [`Documentazione/CHANGELOG.md`](Documentazione/CHANGELOG.md) per lo storico completo.
+**v2.0.2** — vedi [`Documentazione/CHANGELOG.md`](Documentazione/CHANGELOG.md) per lo storico completo.
 
 Il popup "Novità" per gli admin è gestito da `src/app/InterfacceECostanti/constants/releases.constants.ts`.
 Le versioni segnate come *interno* nel CHANGELOG non aggiornano `CURRENT_VERSION` e non generano popup.
