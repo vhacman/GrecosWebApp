@@ -5,6 +5,42 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v2.1.0] — 27-03-2026
+
+### Novità
+
+- **Modifica serata cassa**
+  Dallo storico cassa (`/admin/storico-cassa`) ogni card ha ora un bottone matita accanto
+  al cestino. Il tap apre un bottom sheet pre-compilato con totale scontrino, POS e lista
+  fornitori. I valori derivati (contanti, totale fornitori, totale da versare) si ricalcolano
+  in tempo reale mentre si digita — stesso pattern di `CalcoloCassa`.
+  Al salvataggio viene chiamato `updateDoc` su Firestore; la card si aggiorna automaticamente
+  grazie al real-time listener di `toSignal`.
+
+- **Conferma eliminazione serata cassa**
+  Il bottone cestino nello storico cassa non elimina più direttamente.
+  Appare un bottom sheet "Eliminare questa serata?" con **Annulla** / **Elimina**.
+  Cliccando sull'overlay il modal si chiude senza fare nulla.
+
+- **Storico cassa raggruppato per settimana**
+  Le serate sono ora divise in gruppi con intestazione testuale: *Questa settimana*,
+  *Settimana scorsa* o l'intervallo lunedì–domenica (es. `17 mar – 23 mar`).
+  Implementato tramite computed signal `chiusurePerSettimana` che raggruppa per chiave
+  ISO del lunedì di ogni settimana.
+
+- **Modifica prenotazione**
+  Il bottone matita in ogni riga prenotazione apre il modal pre-compilato con tutti i dati
+  esistenti (nome, telefono, zona, persone, seggioloni, orario, note).
+  Al salvataggio viene chiamato `updatePrenotazione` invece di `addPrenotazione`:
+  data originale e stato "arrivata" vengono preservati.
+
+- **Numero persone con range (es. 33/35)**
+  Nel form prenotazione è possibile specificare opzionalmente un numero massimo di persone
+  oltre a quello minimo. La visualizzazione mostra `persone/personeMax` (es. `4/5`).
+  Il campo è opzionale: se non compilato si mostra solo il numero esatto.
+
+---
+
 ## [v2.0.2] — 23-03-2026
 
 ### Novità
