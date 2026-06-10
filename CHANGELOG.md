@@ -5,6 +5,98 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v2.4.0] — 10-06-2026
+
+### Promemoria menù in dashboard
+
+- **Promemoria del giovedì** — banner in dashboard (`mostraPromemoriaMenu`) che ricorda
+  allo staff di aggiornare il menù online. Visibile solo il giovedì (`getDay() === 4`).
+  Pura logica client, nessun dato su Firestore. Dismiss via `sessionStorage`
+  (`promemoriaMenu_chiuso`): riappare al login successivo.
+
+- **Mini promemoria weekend** — avviso compatto ven/sab/dom (`mostraPromemoriaWeekend`)
+  che ricorda di togliere dal menù i piatti finiti. Dismiss via `sessionStorage`
+  (`promemoriaWeekend_chiuso`).
+
+### Stato aggiornamento menù
+
+- **Card "Menù online: aggiornato X giorni fa"** — deriva da `MAX(updatedAt)` su tutte le
+  categorie admin + `fuoriMenu` (`MenuService.getUltimoAggiornamentoMenu()`), realtime via
+  `combineLatest`. Nessun documento extra su Firestore.
+- Etichetta `oggi` / `ieri` / `N giorni fa` (`etichettaAggiornamento`).
+- Stato colore (`statoAggiornamento`): `ok` ≤ 2 gg (verde), `warn` 3–5 gg (arancione),
+  `alert` > 5 gg o mai aggiornato (rosso).
+
+### Calcolo Cassa
+
+- **Avviso versamento negativo** — se i fornitori pagati in contanti superano i contanti
+  incassati (`versamentoNegativo = totaleDaVersare() < 0`), compare un avviso `role="alert"`:
+  niente da versare in banca, cassa in negativo.
+
+---
+
+## [v2.3.1] — 16-04-2026
+
+### Calcolo Cassa senza password
+
+- **Rimossa la password di accesso al Calcolo Cassa** su richiesta della titolare.
+  Il bottone in dashboard porta direttamente alla sezione, senza inserire nessuna password.
+
+---
+
+## [v2.3.0] — 16-04-2026
+
+### Performance (Lighthouse mobile: 76 → 87)
+
+- **CSS ridotto del 56% (transfer size)** — rimosso `bootstrap.min.css` completo (33 KB gzipped).
+  Sostituito con `bootstrap-reboot.min.css` + `bootstrap-icons.css` caricati direttamente
+  via `angular.json` (nessun processing Sass). Transfer size CSS: 34 KB → 15 KB (−56%).
+
+- **Clarity.js spostato fuori dal percorso critico** — inizializzato via `requestIdleCallback`
+  (fallback `setTimeout`) *dopo* il bootstrap dell'app, eliminando il contributo al TBT
+  della prima visita.
+
+- **FCP 3.5 s → 2.0 s | LCP 4.2 s → 2.7 s | SI 3.5 s → 2.3 s**
+
+### SEO
+
+- **robots.txt creato** (`public/robots.txt`) — permette tutto tranne `/admin` e dichiara
+  il sitemap. Lighthouse segnalava score 0 per assenza del file.
+
+### Fix aspect ratio immagini
+
+- Corretti gli attributi HTML `width`/`height` di `iconaNatalino.png`, `iconaNatalino.webp`
+  e `logo1 (1).png` per rispettare le proporzioni reali (audit Lighthouse). Il CLS fix
+  resta valido.
+
+---
+
+## [v2.2.0] — 13-04-2026
+
+### Novità
+
+- **Comande e Preconti unificati** — il componente `/admin/preconto` gestisce entrambe le
+  modalità tramite signal `modo: 'preconto' | 'comanda'`. La card dashboard "Comande e Preconti"
+  apre in modalità Comanda (`?modo=comanda`); un bottone permette di passare all'altra modalità
+  senza perdere le voci. In modalità Comanda prezzi e totali sono nascosti.
+
+- **Salvataggio comanda su Firestore** — bottone "Salva comanda" con popup di conferma
+  ("Salvare? Sì / Annulla") prima di scrivere nella collezione `comande/`. "Aggiorna"
+  sovrascrive il documento esistente.
+
+- **Storico comande** (`/admin/comande-storia`) — lista per giorno, KPI (totale / da convertire),
+  badge "Preconto"/"Da convertire", bottoni "Vai al preconto", "Modifica", "Elimina" con conferma.
+
+- **Collegamento comanda → preconto** — alla creazione del preconto da modalità Comanda viene
+  scritto `precontoId` sul documento comanda. Il badge diventa verde con "Vai al preconto".
+
+- **Conferma salvataggio preconto** — tutti gli innesco "Salva preconto" aprono un popup di
+  conferma contestuale ("Aggiornare?" / "Salvare?") prima di scrivere su Firestore.
+
+- **Regola Firestore `comande/`** — `allow read, write: if request.auth != null`, deployata.
+
+---
+
 ## [v2.1.0] — 27-03-2026
 
 ### Novità
