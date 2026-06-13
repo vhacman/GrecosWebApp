@@ -65,7 +65,7 @@ firebase deploy    # build + deploy su Firebase Hosting + Firestore rules
 
 ## Versione corrente
 
-**v2.4.0** — vedi [`CHANGELOG.md`](CHANGELOG.md) per lo storico completo.
+**v2.5.0** — vedi [`CHANGELOG.md`](CHANGELOG.md) per lo storico completo.
 
 Il popup "Novità" per gli admin è gestito da `src/app/InterfacceECostanti/constants/releases.constants.ts`.
 Le versioni segnate come *interno* nel CHANGELOG non aggiornano `CURRENT_VERSION` e non generano popup.
@@ -74,7 +74,7 @@ Le versioni segnate come *interno* nel CHANGELOG non aggiornano `CURRENT_VERSION
 
 ## Firebase
 
-- **Firestore collections:** `antipasti`, `pizzeRosse`, `pizzeBianche`, `focacceCalzoni`, `dolci`, `bevande`, `fuoriMenu`, `ingredienti`, `config`, `chiusure`, `prenotazioni`, `ordiniAsporto`, `nonPrenotati`, `storicaSerate`
+- **Firestore collections:** `antipasti`, `pizzeRosse`, `pizzeBianche`, `focacceCalzoni`, `dolci`, `bevande`, `fuoriMenu`, `ingredienti`, `config`, `chiusure`, `prenotazioni`, `ordiniAsporto`, `nonPrenotati`, `storicaSerate`, `messaggiRecenti`, `avvisiRecenti`
 - **Cache strategy:** `memoryLocalCache()` — no IndexedDB (evita corruzioni)
 - **Security rules:** regole per-collezione in produzione (admin-only per scrittura)
 

@@ -5,6 +5,41 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v2.5.0] — 13-06-2026
+
+### Banner avviso puntualità
+
+- **Nuovo banner fisso in homepage** — striscia rossa sempre visibile (finché attiva)
+  con animazione "brillio" (sweep di luce diagonale + pulsazione del bordo). Diverso dal
+  Messaggio del giorno: non è un popup, è un avviso permanente. Documento Firestore
+  `config/avvisoPuntualita` (`AvvisoBanner`: `titolo`, `testo`, `attivo`). Testo di default
+  precompilato sulla puntualità (`DEFAULT_AVVISO`).
+- **Rispetta `prefers-reduced-motion`** — animazioni disattivate per chi le ha disabilitate.
+- **Slot messaggi collassabile** — `.messaggio-slot:not(:has(> *))` azzera il `min-height`
+  così non resta un buco vuoto sotto il banner quando non ci sono messaggi di stato.
+- **Nuova sezione admin** `impostazioni/avviso/` per modificare titolo/testo e attivarlo.
+
+### Storico messaggi e avvisi (riselezione rapida)
+
+- **Chip "Messaggi recenti"** nel pannello Messaggio del giorno — riseleziona un testo già
+  usato con un click, oppure **Ripubblica** subito (attivo in 1 click), oppure rimuovi dallo
+  storico (cestino). Max 10 voci, ordinate per data, ordinamento client-side (evita
+  problemi con `serverTimestamp` pendente). Collezioni Firestore `messaggiRecenti` /
+  `avvisiRecenti` con potatura automatica oltre le 10 voci più recenti.
+- Lo storico è secondario: se la scrittura fallisce (es. rules non deployate) non blocca
+  il salvataggio principale (`try/catch`).
+
+### Impostazioni come hub dedicato
+
+- **Impostazioni promossa a card hub** in dashboard (Orari, Messaggio, Banner avviso,
+  Stagione, Contatti). Rimossa dalla sezione Strumenti.
+
+### Varie
+
+- Promemoria weekend: "Giordi" → "Giordi e Noemi".
+
+---
+
 ## [v2.4.0] — 10-06-2026
 
 ### Promemoria menù in dashboard
