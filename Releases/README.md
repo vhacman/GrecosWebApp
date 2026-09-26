@@ -12,7 +12,7 @@ Web app per la gestione del menu digitale, prenotazioni tavoli e ordini asporto 
 | UI | Bootstrap 5.3 + Bootstrap Icons 1.13 |
 | Form/Dialog | Angular Material 21 |
 | Database | Firebase Firestore (europe-west1) |
-| Auth | Firebase Authentication (email/password) |
+| Auth | Firebase Authentication (email/password) + elenco admin/ruoli su Firestore |
 | Hosting | Firebase Hosting |
 | Linguaggio | TypeScript 5.9 strict mode |
 
@@ -25,12 +25,13 @@ GrecosMenu/                     ← root Git
 ├── GrecosMenu/                 ← progetto Angular (cd qui per tutti i comandi)
 │   ├── src/app/
 │   │   ├── InterfacceECostanti/   interfacce, costanti, allergeni, releases
-│   │   ├── services/              auth, menu, config, statistiche
+│   │   ├── services/              auth, menu, config, statistiche, feedback, utenti
 │   │   ├── core/                  guards, models, pipes, utils, i18n, env
 │   │   ├── public/                home, navbar, menu pubblico, fuori menu
-│   │   └── admin/                 login + dashboard (asporto, prenotazioni,
-│   │                              disponibilità, impostazioni, chiusure,
-│   │                              calcolo cassa, statistiche, storico)
+│   │   └── admin/                 login + dashboard (disponibili stasera, recensioni,
+│   │                              asporto, prenotazioni, impostazioni e strumenti
+│   │                              con utenti, chiusure, calcolo cassa, storico)
+│   ├── scripts/                   seed-admins.js, patch-translations-fr.js, …
 │   └── firebase.json / .firebaserc
 ├── Documentazione/
 │   └── CHANGELOG.md
@@ -65,7 +66,7 @@ firebase deploy    # build + deploy su Firebase Hosting + Firestore rules
 
 ## Versione corrente
 
-**v2.1.0** — vedi [`Documentazione/CHANGELOG.md`](Documentazione/CHANGELOG.md) per lo storico completo.
+**v2.7.0** — vedi [`CHANGELOG.md`](../CHANGELOG.md) per lo storico completo e [`Releases/RELEASE_v2.7.0.md`](RELEASE_v2.7.0.md) per il dettaglio.
 
 Il popup "Novità" per gli admin è gestito da `src/app/InterfacceECostanti/constants/releases.constants.ts`.
 Le versioni segnate come *interno* nel CHANGELOG non aggiornano `CURRENT_VERSION` e non generano popup.
@@ -74,9 +75,10 @@ Le versioni segnate come *interno* nel CHANGELOG non aggiornano `CURRENT_VERSION
 
 ## Firebase
 
-- **Firestore collections:** `antipasti`, `pizzeRosse`, `pizzeBianche`, `focacceCalzoni`, `dolci`, `bevande`, `fuoriMenu`, `ingredienti`, `config`, `chiusure`, `prenotazioni`, `ordiniAsporto`, `nonPrenotati`, `storicaSerate`
+- **Firestore collections:** `antipasti`, `pizzeRosse`, `pizzeBianche`, `focacceCalzoni`, `dolci`, `bevande`, `fuoriMenu`, `ingredienti`, `config`, `chiusure`, `prenotazioni`, `ordiniAsporto`, `nonPrenotati`, `storicaSerate`, `messaggiRecenti`, `avvisiRecenti`, `statistiche`, `feedback`, `admins`, `richiesteAccesso`
 - **Cache strategy:** `memoryLocalCache()` — no IndexedDB (evita corruzioni)
-- **Security rules:** regole per-collezione in produzione (admin-only per scrittura)
+- **Security rules:** regole per-collezione; accesso admin solo a chi è in `admins/{uid}` (`isAdmin()`), ruoli `staff`/`titolare` (fondatori e amministratore di sistema in `admin.constants.ts` e `firestore.rules`)
+- **Lingue:** IT / EN / FR — campi Firestore `campo`, `campo_en`, `campo_fr` (fallback EN → IT)
 
 ---
 

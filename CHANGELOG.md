@@ -5,7 +5,171 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
-## [v2.6.1] — 26-09-2026
+## [v2.7.0] — 26-09-2026
+
+> Release unica che accorpa le versioni di oggi (2.6.0, 2.6.1 e 2.7.0).
+
+### Utenti e sicurezza accessi admin
+
+- **Elenco admin su Firestore** (`admins/{uid}`): `firestore.rules` usa `isAdmin()` (login **e**
+  documento in `admins`) al posto di `request.auth != null` in tutte le 26 regole. Chi si registra
+  da solo (registrazione Firebase abilitata) non ottiene più accesso a prenotazioni, clienti, cassa.
+- **`authGuard`** e **login** verificano l'autorizzazione (`AuthService.verificaAdmin()`, con cache
+  per uid): account non autorizzato → logout e messaggio "Account non ancora autorizzato", e una
+  richiesta in `richiesteAccesso/{uid}` (create solo sul proprio uid/email, rules validate).
+- **Impostazioni e Strumenti → Utenti** (`impostazioni/utenti/imp-utenti`, `services/utenti.ts`):
+  aggiungi utente (nome, email, password iniziale — creato con una seconda istanza Firebase
+  così l'admin resta collegato), approva/rifiuta richieste, email di reset password, togli accesso
+  (non a se stessi, secondo i ruoli sotto). Richiede "Abilita creazione (registrazione)" attiva in Firebase Authentication.
+- **Amministratore di sistema** (`hacmanvioricagabriela@gmail.com`, `admin.constants.ts` +
+  `isAmministratoreSistema()` in `firestore.rules`): accesso garantito anche senza documento in
+  `admins`, il suo documento non può essere modificato né eliminato (rules), in app badge
+  "Amministratore di sistema" e nessun bottone "togli accesso".
+- **Ruoli**: `admins/{uid}.ruolo` = `'staff'` (default) | `'titolare'`.
+  - **Fondatori** `nunu7@hotmail.it`, `giuseppegng1@gmail.com` (`FONDATORI` / `isFondatore()`):
+    sempre titolari e sempre con accesso, documento protetto dagli altri.
+  - **Dare/togliere "Titolare"**: solo fondatori e amministratore di sistema (`puoAssegnareRuoli()`),
+    anche alla creazione (checkbox "Titolare").
+  - **Togli accesso**: fondatori e amministratore di sistema su chiunque (titolari compresi),
+    titolari sugli utenti staff; mai sull'amministratore di sistema e sui fondatori. Stesse condizioni in UI (`possoRimuovere()` /
+    `possoCambiareRuolo()`) e in `firestore.rules` (`isTitolare()`, `protetto()`).
+  - Badge "Titolare" nella lista; lo script di migrazione assegna `ruolo: 'staff'`.
+- **Schermata Utenti**: "Aggiungi utente" come riga → popup centrato con scelta ruolo
+  **Staff | Titolare** (Titolare attivo solo per fondatori e amministratore di sistema); lista
+  "Chi ha accesso" divisa in gruppi **Amministratori di sistema / Titolari / Staff**; nomi degli
+  account impostati da `seed-admins.js` (Giordano, Giuseppe, Gabriela, Noemi, Nunzia).
+- **Nomi al posto delle email** (`services/nomi-utenti.ts`, dai nomi in Impostazioni → Utenti):
+  "inserita da" nelle prenotazioni (riga e notifica), "inserito da" nell'asporto (nuovo campo
+  `creatoDa` sugli ordini creati da ora in poi), "Aggiornato da" in Disponibili stasera e card
+  dashboard. Righe "inserito da" in grigio scuro (#555).
+- **Script `scripts/seed-admins.js`** — migrazione una tantum: tutti gli account esistenti con email
+  → `admins/{uid}` (anteprima di default, `--apply` per scrivere). **Da lanciare prima del deploy
+  delle nuove rules**, altrimenti nessuno entra più.
+- `service-account*.json` tolti dal versionamento (`.gitignore`).
+
+### "Disponibili stasera" — lavoro quotidiano sul menù per i dipendenti
+
+- **Nuova pagina `/admin/stasera`** (card "Disponibili stasera" in dashboard, a tutta larghezza,
+  icona checklist verde / arancione se oggi nessuno ha aggiornato il menù):
+  tab **Fuori menù** (`GestioneFuoriMenu` con `[incorporato]="true"`), **Finiti** (componenti
+  Disponibilità ingredienti/dolci/antipasti/bevande incorporati) e **Resoconto**. `?tab=` per il tab iniziale.
+- **Far vedere che serve**: `StatisticheService.getOggi()` (live su `statistiche/<oggi>`):
+  "N persone hanno visto il menù oggi" — in pagina e sulla card.
+- **Chi ha aggiornato**: `MenuService` firma ogni scrittura admin con `updatedBy` (nome account,
+  parte prima della @ — le collezioni menù sono a lettura pubblica) + `updatedAt` anche sugli
+  ingredienti. `getUltimoAggiornamento()` → "Aggiornato oggi da marco alle 19:42" oppure
+  avviso arancione "Oggi nessuno ha ancora aggiornato il menù".
+- **Promemoria all'apertura cucina**: accendendo "Cucina aperta" senza aggiornamenti di oggi
+  compare "Il menù di stasera è a posto?" → Apri Disponibili stasera. Promemoria weekend → stessa pagina.
+- **Fuori menù a rotazione settimanale**: nella pagina solo le **categorie una sotto l'altra**
+  (niente chip "Tutte", con il numero di accesi); tocco su una categoria → **popup** con tutti i
+  suoi fuori menù divisi in due sezioni richiudibili **ATTIVI** / **NON ATTIVI** (chiuse
+  all'apertura, aperte durante la ricerca) per accendere/spegnere, modificare, eliminare e
+  aggiungerne di nuovi (categoria preimpostata, nascono accesi); ricerca nel popup se più di 5.
+  `attivatoIl` salvato a ogni accensione → badge "acceso da N gg" oltre 7 giorni.
+- **Disponibilità ingredienti**: form "Aggiungi ingrediente" spostato in cima.
+- **Dashboard**: rimossa la card Disponibilità; "Gestione Menù" → **"Modifica menù"** (piatti, prezzi,
+  allergeni, traduzioni) che apre direttamente `/admin/gestione-menu`. Fuori menù e Storico serate
+  tolti da lì; eliminata la pagina `sezione-gestione-menu`; redirect `/admin/sezione-menu` →
+  `/admin/gestione-menu` e `/admin/fuori-menu` → `/admin/stasera`. Storico serate resta
+  raggiungibile solo da URL (`/admin/storico-serate`).
+
+### Letture Firestore ridotte (quota piano Spark)
+
+- Il 26-09 la quota gratuita di **50.000 letture/giorno** è stata esaurita (errore 429 anche sul
+  menù pubblico). Causa principale: "ultimo aggiornamento" calcolato ascoltando tutte le
+  collezioni del menù (~250 documenti) in più componenti, a ogni apertura/ricarica.
+- **Ora**: ogni modifica admin scrive anche il documento unico `config/ultimoAggiornamento`
+  (`updatedAt`, `updatedBy`); `MenuService.getUltimoAggiornamento()` legge solo quello
+  (`docData` + `shareReplay`) → 1 lettura invece di ~250 per componente.
+- **Script `scripts/rollback-prove-26-09.js`**: ripristina i 3 fuori menù accesi per prova
+  (Supplì Gricia, Supplì Carbonara, Tris di Bruschettoni → spenti, tolti `updatedBy`/`attivatoIl`,
+  `updatedAt` = `createdAt`) e inizializza `config/ultimoAggiornamento` con l'ultima modifica reale.
+- Consigliato passare al piano **Blaze** (a consumo) con avviso di budget.
+
+### Lingua francese + i18n generica
+
+- **Nuova lingua FR** — `translations.fr.ts` (tutte le chiavi IT), `Lingua = 'it' | 'en' | 'fr'`,
+  `LINGUE` (codice/sigla/nome) in `translations.ts`; `TRANSLATIONS` tipizzato
+  `Record<Lingua, Record<TranslationKey, string>>` (chiave mancante → errore di compilazione).
+- **`LinguaService.loc(obj, campo)` generico** — sostituisce `loc(it, en)` (26 punti):
+  legge `campo` / `campo_<lingua>` con fallback lingua attiva → EN → IT; stringhe vuote = mancanti.
+  Nuova lingua = nuovo dizionario + voce in `LINGUE`, nessun altro cambio al codice.
+- **Lingua iniziale automatica** — scelta salvata (`localStorage` `lingua`) → lingua del
+  telefono (`navigator.languages`) → italiano. `imposta()` sostituisce `toggle()`;
+  `<html lang>` sincronizzato.
+- **Selettore `app-lingua-selector`** (IT | EN | FR, generato da `LINGUE`) in homepage,
+  navbar categorie e pagina fuori menù. Chip categorie homepage ora da `lingua.t('cat_*')`.
+- **Dati**: `nome_fr` / `descrizione_fr` su `MenuItem` e `FuoriMenu`; `titolo_fr` / `testo_fr`
+  su `AvvisoBanner` / `AvvisoRecente`; `DEFAULT_AVVISO` tradotto in FR.
+- **Admin**: componente `admin/shared/traduzioni-campi` (sezione "Traduzioni" richiudibile,
+  campi generati da `LINGUE`) nei form aggiungi/modifica di Gestione menù e Fuori menù —
+  prima nome_en/descrizione_en non erano modificabili dall'admin. Banner avviso: campi
+  titolo/testo per ogni lingua; `addAvvisoRecente(titolo, testo, traduzioni)`.
+- **Feedback**: `lingua` accetta `'fr'` (tipo + `firestore.rules`); badge lingua in admin.
+- Badge "non disponibile" degli ingredienti tradotto (`parseIngredienti` 3° parametro).
+- **Script `scripts/patch-translations-fr.js`** — traduzioni FR di tutti i 194 piatti non
+  eliminati (per id Firestore, controllo sul nome), anteprima di default, `--apply` per scrivere.
+
+### Feedback e recensioni clienti
+
+- **Promemoria all'apertura del menù** (`public/shared/recensione-promemoria/`) — popup
+  "Se alla fine della tua visita ti senti soddisfatto, ricordati di tornare qui e lasciare
+  una recensione". Una volta per visita (finestra 6h, `localStorage` `recensione_promemoria_ts`),
+  non mostrato agli admin loggati né a chi ha già votato. Tradotto IT/EN (chiavi `rec_*`).
+- **Bottone "Recensione"** fisso nel menù (sopra il FAB Home) → bottom-sheet
+  `public/shared/recensione-modal/` con 5 faccine + commento facoltativo (max 500 caratteri).
+  - Voto 4–5 → invito a recensire su Google/TripAdvisor (link da `config/contatti`).
+  - Voto 1–3 → ringraziamento, commento privato visibile solo in admin.
+  - Un voto per visita (`localStorage` `recensione_voto_ts`).
+  - Campi **Nome** (facoltativo, max 60) e **Giorno della visita** (`<input type="date">`
+    precompilato con oggi, modificabile fino a 60 giorni indietro, niente date future).
+- **Collezione Firestore `feedback`** (`Feedback` in `InterfacceECostanti/feedback.ts`,
+  `FeedbackService` in `services/feedback.ts`). Rules: `create` pubblico validato
+  (`hasOnly` campi ammessi, `voto` int 1–5, `commento` ≤ 500, `nome` ≤ 60,
+  `dataVisita` formato `YYYY-MM-DD`, `lingua` it/en,
+  `letto == false`, `createdAt == request.time`); read/update/delete solo admin.
+- **Sezione admin `/admin/feedback`** — media voti, distribuzione 1–5, filtri
+  (tutti / da migliorare / con commento), badge "nuovo", eliminazione con conferma.
+  I non letti vengono segnati come letti all'apertura. Titolo pagina "Recensioni clienti".
+- **Dashboard più compatta** — card "Cucina aperta" e stagione affiancate (una colonna
+  ciascuna), più basse; switch cucina ridotto (40×22). Stagione: lo switch on/off è sostituito
+  da un selettore a due voci **❄️ Inverno | ☀️ Estate** (attiva piena: azzurro / oro), così
+  l'inverno non sembra più "spento"; conferma prima del cambio invariata; classi `stg-*`.
+  Striscia "Visualizza Menù e Prezzi" più sottile (icona 30px, padding ridotto, campanella
+  più piccola). Card hub: titolo accanto all'icona, sottotitolo sotto (`display: contents`).
+- **Card unica "Impostazioni e Strumenti"** in dashboard — rimossa la card Strumenti; la pagina
+  `/admin/impostazioni` ha ora il gruppo "Strumenti" (Rubrica, Chiusure, QR Code). Generatore QR
+  estratto in `admin/shared/qr-code` (`[(aperto)]`); eliminato il componente `sezione-strumenti`,
+  la rotta `/admin/sezione-strumenti` reindirizza a `/admin/impostazioni`; back-link di Rubrica,
+  Chiusure e Impostazioni aggiornati.
+- **Card "Recensioni clienti" in dashboard** (non in Strumenti) — media voti + numero voti
+  nel sottotitolo, badge rosso con i non letti sull'icona (`FeedbackService.getFeedback()`).
+- **Sezione "Recensioni" in homepage** — blocco dedicato sotto i Social (stesso stile di
+  "Dove siamo"/"Social"): card oro "Com'è andata? Lascia una recensione" che apre lo stesso
+  `RecensioneModal` del menù, sotto riga secondaria "Anche su: Google · TripAdvisor" con i
+  link diretti. Sostituisce la vecchia `recensioni-row` a pillole.
+
+### Banner avviso tradotto in inglese
+
+- `AvvisoBanner` / `AvvisoRecente` con campi opzionali `titolo_en` / `testo_en`;
+  `DEFAULT_AVVISO` include la traduzione del testo sulla puntualità.
+- Homepage: `avvisoTitolo` / `avvisoTesto` via `lingua.loc()` — fallback sull'italiano;
+  se il testo salvato è ancora quello di default usa la traduzione di default (banner già
+  online tradotto senza intervento admin).
+- Admin `imp-avviso`: campi facoltativi "Titolo (EN)" / "Testo (EN)", salvati anche nello
+  storico avvisi recenti (riselezione/ripubblica mantengono la traduzione).
+- **Banner più compatto** in homepage: padding e font ridotti, icona in linea col titolo,
+  testo intero con font e interlinea ridotti.
+
+### Rimosso popup stagione in homepage
+
+- Eliminato il popup "Informiamo i nostri clienti che per la stagione … saremo aperti …"
+  (effect, signal `mostraPopupStagione`, template in `home`).
+- `imp-stagione`: il cambio estate/inverno non pubblica più `messaggioStagione`
+  (imposta `attivoStagione: false`, spegnendo anche l'annuncio già salvato); popup di
+  conferma ora "Cambiare stagione?" con i nuovi giorni di apertura.
+- `impostazioni.ts`: rimosso "Annuncio stagione attivo" dal riepilogo messaggi.
 
 ### Prenotazioni — condivisione WhatsApp con immagine
 
@@ -14,10 +178,6 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
   Canvas + `navigator.share`) invece di inviare un messaggio di testo tramite `wa.me`.
 - Rimosso `condividiWaTesto()` da `prenotazioni.ts` (non più usato).
 - L'asporto mantiene la condivisione testuale (`wa.me`).
-
----
-
-## [v2.6.0] — 26-09-2026
 
 ### Dashboard rinnovata
 
@@ -36,8 +196,8 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 - **Navigazione giorni orizzontale in alto**, settimane passate collassabili, settimana
   corrente allineata a sinistra all'apertura.
 - **Ricerca cliente** in header (con freccia indietro), ordini raggruppati per orario.
-- **Barra azioni fissa in basso**: Aggiungi + "Condividi con il personale" (WhatsApp testo,
-  1 tap via `wa.me`).
+- **Barra azioni fissa in basso**: Aggiungi + "Condividi con il personale" (WhatsApp:
+  prenotazioni come immagine, asporto come testo via `wa.me` — vedi sotto).
 - **KPI espandibile** con capienza per sala (Sala interna, Veranda, Terrazzo).
 - **Etichette prenotazione** (Compleanno, Allergie, Abituale, Celiaco, Bimbi, Esterno) —
   campo `tag?: string[]` su `Prenotazione`.
