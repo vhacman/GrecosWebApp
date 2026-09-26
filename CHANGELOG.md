@@ -5,6 +5,18 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v2.6.1] — 26-09-2026
+
+### Prenotazioni — condivisione WhatsApp con immagine
+
+- **Ripristinata condivisione grafica** — il bottone "Invia" nella barra in basso delle
+  prenotazioni apre di nuovo il modal `pren-modal-anteprima` (immagine PNG generata via
+  Canvas + `navigator.share`) invece di inviare un messaggio di testo tramite `wa.me`.
+- Rimosso `condividiWaTesto()` da `prenotazioni.ts` (non più usato).
+- L'asporto mantiene la condivisione testuale (`wa.me`).
+
+---
+
 ## [v2.6.0] — 26-09-2026
 
 ### Dashboard rinnovata
