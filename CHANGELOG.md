@@ -5,6 +5,47 @@ Formato: `[vX.Y.Z] — GG-MM-AAAA`
 
 ---
 
+## [v2.6.0] — 26-09-2026
+
+### Dashboard rinnovata
+
+- **Campanellina riepilogo serata** accanto a "Visualizza Menù": pannello con stato menù,
+  cucina, prenotati oggi (dettaglio per zona + totale persone), asporto, modalità stagione e
+  disponibilità alimenti. Voce disponibilità in rosso se menù non aggiornato da ≥ 10 giorni;
+  dal popup si aprono le pagine di disponibilità modificabili inline.
+- **Switch estate/inverno in dashboard** (componente `ImpStagione` embeddato), rimosso da
+  Impostazioni. Il **terrazzo esterno** ora disponibile anche in inverno.
+- Rimosso banner "Menù online: aggiornato X giorni fa"; promemoria weekend ora è un popup
+  con bottone "Aggiorna ora" → fuori-menù, mostrato solo se menù fermo da ≥ 10 giorni.
+- **Sezione Statistiche rimossa** (vista non utilizzata; tracking analytics resta attivo).
+
+### Prenotazioni e Asporto
+
+- **Navigazione giorni orizzontale in alto**, settimane passate collassabili, settimana
+  corrente allineata a sinistra all'apertura.
+- **Ricerca cliente** in header (con freccia indietro), ordini raggruppati per orario.
+- **Barra azioni fissa in basso**: Aggiungi + "Condividi con il personale" (WhatsApp testo,
+  1 tap via `wa.me`).
+- **KPI espandibile** con capienza per sala (Sala interna, Veranda, Terrazzo).
+- **Etichette prenotazione** (Compleanno, Allergie, Abituale, Celiaco, Bimbi, Esterno) —
+  campo `tag?: string[]` su `Prenotazione`.
+- **Rubrica anche per l'asporto**: popup "salva contatto?" dopo un ordine con numero nuovo.
+- Rimosso il numero tavolo dalle singole prenotazioni.
+
+### Calcolo Cassa
+
+- **Storico serate**: settimana corrente espansa, passate collassate con resoconto inline
+  (serate, versato, fornitori pagati) + card riepilogo settimana.
+- **Fix giovedì passati in inverno**: `generaGiorniAperti` usa l'unione dei giorni di
+  apertura per le date passate (`core/utils/calendar-dates.ts`).
+
+### Fix
+
+- Zoom iOS sul campo ricerca (font 16px).
+- Testo "Oggi" invisibile sul chip giorno selezionato.
+
+---
+
 ## [v2.5.0] — 13-06-2026
 
 ### Banner avviso puntualità
